@@ -57,7 +57,8 @@ Frontend dapat memakai ringkasan untuk menentukan tampilan status, lalu membaca 
 ### Lokasi dan versi
 
 - Gunakan `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` sebagai usulan lokasi file lokal dari root repo. Backend membaca file yang sudah ditempatkan tim di komputer yang menjalankan FastAPI.
-- `dataset_version` berupa `sha256:<hash>` dari isi CSV yang diproses. Nilai ini bisa dicocokkan dengan hash file pada serah terima Data. Paket model beserta metadata dipasang di `backend/artifacts/`.
+- `dataset_version` berupa `sha256:<hash>` dari isi CSV yang diproses. Nilai ini bisa dicocokkan dengan hash file pada serah terima Data. Letakkan paket model dan `manifest.json` di `backend/artifacts/`.
+- Data memberi nama rilis pada `model_version` di manifest. Backend menambahkan fingerprint isi manifest dan ketiga artefak untuk mendapatkan versi yang disajikan, misalnya `model-v1@sha256:<hash>`.
 - Gunakan kedua versi saat menyimpan dan menyajikan hasil. Perubahan pada salah satu versi memicu pemrosesan ulang file sesuai desain aplikasi.
 - Tim Data menyerahkan file berversi, pipeline lengkap dengan preprocessing, daftar fitur dan tipe input, versi dependensi, threshold churn, profil dan pemetaan ID segmen, aturan retensi, hasil evaluasi, serta contoh hasil per pelanggan. Training dilakukan offline.
 
@@ -93,3 +94,62 @@ customerID,tenure,Contract,MonthlyCharges,TotalCharges,Churn
 3. Baris 4 berisi `abc` pada kolom bilangan bulat. Usulan awalnya adalah menghentikan batch dengan status `failed` dan menampilkan kode `INVALID_FIELD`, nomor baris, nama kolom, dan pesan yang bisa diperbaiki tim. Terapkan kegagalan batch juga untuk kolom wajib yang hilang atau ID duplikat. Sepakati kebijakan ini dengan Data sebelum menulis validasi.
 
 Skenario fixture `ready` memakai dua baris pertama setelah header sebagai contoh. Skenario `failed` menunjukkan respons jika baris dengan tenure invalid ikut diproses.
+
+### Paket model dari Data
+
+Manifest menyimpan petunjuk untuk menjalankan tiga pipeline yang sudah dilatih. Contoh berikut menunjukkan format serah terima. Ganti nama artefak, versi, fitur, kelas positif, threshold, segmen, dan aturan sesuai hasil eksperimen.
+
+```json
+{
+  "model_version": "model-v1",
+  "dependencies": {
+    "joblib": "1.4.2",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1"
+  },
+  "allow_missing_total_charges": true,
+  "categories": {
+    "Contract": ["Month-to-month", "One year", "Two year"]
+  },
+  "classification": {
+    "artifact": "churn.joblib",
+    "algorithm": "Logistic Regression",
+    "features": ["tenure", "Contract", "MonthlyCharges"],
+    "positive_class": "Yes",
+    "threshold": 0.5
+  },
+  "clustering": {
+    "artifact": "segments.joblib",
+    "algorithm": "K-Means",
+    "features": ["tenure", "MonthlyCharges", "TotalCharges"],
+    "segments": [
+      {"segment_id": 0, "segment_name": "Pelanggan baru", "profile": "Masa berlangganan pendek."},
+      {"segment_id": 1, "segment_name": "Masa langganan lebih panjang"}
+    ]
+  },
+  "regression": {
+    "artifact": "charges.joblib",
+    "algorithm": "Ridge",
+    "features": ["tenure", "Contract"],
+    "target": "MonthlyCharges",
+    "unit": "satuan biaya dataset"
+  },
+  "retention_rules": [
+    {
+      "churn_prediction": "Yes",
+      "min_probability": 0.6,
+      "segment_ids": [1],
+      "recommendation": "Tawarkan peninjauan kontrak."
+    }
+  ],
+  "fallback_recommendation": "Pantau pengalaman pelanggan."
+}
+```
+
+- Simpan file `.joblib` atau `.pkl` bersama manifest. Gunakan hasil ekspor dari tim Data. Cocokkan nama dan urutan fitur dengan input pipeline saat training.
+- Gunakan `predict_proba()` dan `classes_` untuk klasifikasi biner. Isi `positive_class` dengan nilai kelas yang berarti churn di model, misalnya `"Yes"` atau `1`. Pipeline segmentasi dan regresi menyediakan `predict()`.
+- Daftarkan semua ID segmen yang bisa dihasilkan model. Jika ada titik noise, tentukan `noise_label` dan sertakan ID tersebut di `segments` dengan nama tampilan.
+- Aktifkan `allow_missing_total_charges` saat pipeline yang mengonsumsi fitur tersebut menangani nilai hilang. Tambahkan kolom ke `categories` jika paket hanya menerima daftar kategori tertentu pada kolom itu.
+- Untuk simulasi retensi, jalankan aturan sesuai urutannya. Semua kondisi dalam satu aturan harus terpenuhi. Batas `min_probability` dan `max_probability` inklusif. Gunakan `fallback_recommendation` saat tidak ada aturan yang cocok.
+- Cantumkan versi `joblib`, `numpy`, `pandas`, dan `scikit-learn` saat ekspor. Sertakan dependensi tambahan yang diperlukan paket agar Backend dapat memeriksa versinya.

@@ -1,2 +1,4 @@
+-r ../data/requirements.txt
 fastapi==0.115.12
+pydantic>=2,<3
 uvicorn==0.34.2
