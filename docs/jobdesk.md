@@ -67,40 +67,42 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 - [ ] Sepakati lokasi file di server, skema dataset, versi file dan model, serta perlakuan untuk baris yang tidak memenuhi skema. Gunakan contoh dari Data untuk memastikan kedua role membaca kolom dan tipe dengan cara yang sama.
 - [ ] Sepakati bentuk ringkasan, hasil per pelanggan, metadata, dan pesan error dengan Frontend. Bagikan fixture berlabel demo untuk kondisi hasil siap, sedang disiapkan, dan gagal.
 
-[Draf kontrak](api.md) dan [fixture demo](../backend/fixtures/dashboard.demo.json) tersedia untuk dibahas dengan Data dan Frontend.
+[Kontrak yang diterapkan](api.md) dan [fixture demo](../backend/fixtures/dashboard.demo.json) tersedia untuk ditinjau bersama Data dan Frontend. Implementasi di bawah diuji menggunakan paket model sintetis. Verifikasi dengan pipeline terlatih dilakukan saat Data menyerahkan paketnya.
 
 ### Validasi dataset dan artefak
 
-- [ ] Baca CSV dari lokasi yang disepakati bersama versi dataset. Tangani file hilang, file kosong, CSV yang rusak, dan kolom yang tidak sesuai skema.
-- [ ] Periksa keberadaan, keunikan, dan konsistensi `customerID`. Validasi tipe dan kolom per pipeline. Ikuti kebijakan Data untuk nilai kosong dan kategori khusus.
-- [ ] Muat artefak dan metadata dari Data. Periksa kecocokan versi dependensi, daftar fitur, dan kelengkapan metadata yang dibutuhkan untuk menghasilkan respons.
-- [ ] Siapkan pesan operasional untuk file atau artefak yang gagal diproses. Sertakan versi yang terdampak agar tim bisa menelusuri penyebab kegagalan.
+- [x] Baca CSV dari lokasi yang disepakati bersama versi dataset. Tangani file hilang, file kosong, CSV yang rusak, dan kolom yang tidak sesuai skema.
+- [x] Periksa keberadaan, keunikan, dan konsistensi `customerID`. Validasi tipe dan kolom per pipeline. Ikuti kebijakan Data untuk nilai kosong dan kategori khusus.
+- [x] Muat artefak dan metadata dari Data. Periksa kecocokan versi dependensi, daftar fitur, dan kelengkapan metadata yang dibutuhkan untuk menghasilkan respons.
+- [x] Siapkan pesan operasional untuk file atau artefak yang gagal diproses. Sertakan versi yang terdampak agar tim bisa menelusuri penyebab kegagalan.
 
 ### Inference dan hasil per pelanggan
 
-- [ ] Pilih kolom input sesuai kontrak masing-masing model dan gunakan preprocessing yang sudah tersimpan di pipeline.
-- [ ] Ambil probabilitas untuk kelas churn yang ditetapkan Data. Terapkan threshold dari metadata untuk menghasilkan label prediksi.
-- [ ] Ambil ID segmen dan cocokkan dengan nama serta profil segmen. Terapkan perlakuan untuk titik noise sesuai metadata jika dibutuhkan.
-- [ ] Jalankan estimasi tagihan dengan fitur regresi, lalu pakai satuan biaya yang disepakati.
-- [ ] Jalankan aturan simulasi retensi dari Data menggunakan hasil risiko dan segmen. Gunakan perilaku yang disepakati jika input aturan kurang lengkap.
-- [ ] Gabungkan ketiga hasil berdasarkan `customerID`. Periksa jumlah pelanggan dan kecocokan ID antara data sumber, ringkasan, dan hasil per pelanggan.
+- [x] Pilih kolom input sesuai kontrak masing-masing model dan gunakan preprocessing yang sudah tersimpan di pipeline.
+- [x] Ambil probabilitas untuk kelas churn yang ditetapkan Data. Terapkan threshold dari metadata untuk menghasilkan label prediksi.
+- [x] Ambil ID segmen dan cocokkan dengan nama serta profil segmen. Terapkan perlakuan untuk titik noise sesuai metadata jika dibutuhkan.
+- [x] Jalankan estimasi tagihan dengan fitur regresi, lalu pakai satuan biaya yang disepakati.
+- [x] Jalankan aturan simulasi retensi dari Data menggunakan hasil risiko dan segmen. Gunakan perilaku yang disepakati jika input aturan kurang lengkap.
+- [x] Gabungkan ketiga hasil berdasarkan `customerID`. Periksa jumlah pelanggan dan kecocokan ID antara data sumber, ringkasan, dan hasil per pelanggan.
 
 ### Pemrosesan otomatis dan penyimpanan hasil
 
-- [ ] Jalankan analisis batch saat file dan model pertama kali tersedia. Deteksi perubahan versi dataset atau model dan jadwalkan pemrosesan ulang.
-- [ ] Gunakan pasangan versi dataset dan model untuk mengenali hasil yang sudah tersedia. Sajikan hasil tersimpan saat Frontend membaca versi yang sama.
-- [ ] Simpan ringkasan, hasil per pelanggan, dan metadata versi. Tandai hasil siap setelah seluruh keluaran yang akan disajikan telah selesai disimpan.
-- [ ] Pastikan dua permintaan baca bersamaan dapat menerima status yang konsisten. Perlakukan analisis yang sedang berjalan sebagai `preparing` sesuai usulan kontrak.
-- [ ] Tangani kegagalan batch dengan status dan pesan yang jelas. Pastikan hasil yang disajikan sebagai versi aktif memang berasal dari versi tersebut.
+- [x] Jalankan analisis batch saat file dan model pertama kali tersedia. Deteksi perubahan versi dataset atau model dan jadwalkan pemrosesan ulang.
+- [x] Gunakan pasangan versi dataset dan model untuk mengenali hasil yang sudah tersedia. Sajikan hasil tersimpan saat Frontend membaca versi yang sama.
+- [x] Simpan ringkasan, hasil per pelanggan, dan metadata versi. Tandai hasil siap setelah seluruh keluaran yang akan disajikan telah selesai disimpan.
+- [x] Pastikan dua permintaan baca bersamaan dapat menerima status yang konsisten. Perlakukan analisis yang sedang berjalan sebagai `preparing` sesuai usulan kontrak.
+- [x] Tangani kegagalan batch dengan status dan pesan yang jelas. Pastikan hasil yang disajikan sebagai versi aktif memang berasal dari versi tersebut.
 
 ### Endpoint dan pengujian Backend
 
-- [ ] Sediakan `GET /api/dataset-summary` untuk identitas dataset, status, jumlah baris, dan distribusi yang dipakai grafik.
-- [ ] Sediakan `GET /api/predictions` untuk hasil tersimpan, termasuk ID pelanggan, probabilitas dan label churn, segmen, estimasi tagihan, simulasi rekomendasi, dan metadata versi.
-- [ ] Sediakan `GET /api/model-info` dan `GET /api/evaluations` untuk metadata model serta hasil eksperimen dari Data. Cocokkan struktur respons dengan fixture Frontend.
-- [ ] Atur CORS jika Frontend dan Backend memakai origin berbeda. Dokumentasikan alamat API, konfigurasi file dan artefak, serta contoh respons untuk kondisi siap, sedang diproses, dan gagal.
-- [ ] Uji file valid, file hilang, kolom salah, ID duplikat, artefak gagal dimuat, dan hasil dari ketiga pipeline. Cocokkan beberapa baris hasil dengan contoh serah terima Data.
-- [ ] Uji pembacaan berulang pada versi yang sama dan pemrosesan ulang ketika versi dataset atau model berubah. Ukur waktu batch dan waktu baca hasil tersimpan secara terpisah.
+- [x] Sediakan `GET /api/dataset-summary` untuk identitas dataset, status, jumlah baris, dan distribusi yang dipakai grafik.
+- [x] Sediakan `GET /api/predictions` untuk hasil tersimpan, termasuk ID pelanggan, probabilitas dan label churn, segmen, estimasi tagihan, simulasi rekomendasi, dan metadata versi.
+- [x] Sediakan `GET /api/model-info` untuk metadata model. Cocokkan struktur respons dengan fixture Frontend.
+- [ ] Sediakan `GET /api/evaluations` untuk hasil eksperimen dari Data.
+- [x] Atur CORS untuk origin lokal Frontend. Dokumentasikan alamat API, konfigurasi file dan artefak, serta contoh respons untuk kondisi siap, sedang diproses, dan gagal.
+- [x] Uji file valid, file hilang, kolom salah, ID duplikat, artefak gagal dimuat, dan hasil dari ketiga pipeline dengan contoh sintetis.
+- [x] Uji pembacaan berulang pada versi yang sama dan pemrosesan ulang ketika versi dataset atau model berubah.
+- [ ] Cocokkan hasil per pelanggan dengan contoh serah terima dari tim Data. Ukur waktu batch dan waktu baca hasil tersimpan pada paket final.
 
 ### Hasil serah terima Backend
 
