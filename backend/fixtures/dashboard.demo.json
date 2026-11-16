@@ -19,11 +19,16 @@
             { "label": "One year", "count": 1 }
           ],
           "tenure": [
-            { "label": "0–12 bulan", "count": 2 }
+            { "label": "0–12 bulan", "count": 2 },
+            { "label": "13–24 bulan", "count": 0 },
+            { "label": "25–48 bulan", "count": 0 },
+            { "label": "49+ bulan", "count": 0 }
           ],
           "monthly_charges": [
-            { "label": "0–29.99", "count": 1 },
-            { "label": "30–59.99", "count": 1 }
+            { "label": "0–<30", "count": 1 },
+            { "label": "30–<60", "count": 1 },
+            { "label": "60–<90", "count": 0 },
+            { "label": "90+", "count": 0 }
           ]
         }
       },
@@ -75,18 +80,21 @@
         "clustering": {
           "algorithm": "K-Means",
           "features": ["tenure", "MonthlyCharges", "TotalCharges"],
+          "noise_label": null,
           "segments": [
             {
               "segment_id": 0,
               "segment_name": "Pelanggan baru",
               "customer_count": 1,
-              "average_tenure_months": 0
+              "average_tenure_months": 0,
+              "is_noise": false
             },
             {
               "segment_id": 1,
               "segment_name": "Masa langganan lebih panjang",
               "customer_count": 1,
-              "average_tenure_months": 12
+              "average_tenure_months": 12,
+              "is_noise": false
             }
           ]
         },

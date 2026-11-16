@@ -36,7 +36,7 @@ Gunakan `GET /api/dataset-summary` untuk memeriksa kesiapan hasil. Usulan HTTP 2
 | `predicted_monthly_charges` | Angka |
 | `recommendation` | String |
 
-Kirim hasil per pelanggan sebagai `data.predictions`. Pertahankan `customerID` sebagai `customer_id` agar hasil dapat dicocokkan dengan pelanggan asal. Sertakan `data.processed_rows` dan `data.warnings`. Gunakan satuan biaya dataset untuk estimasi tagihan dan beri label simulasi pada rekomendasi retensi. Metadata model memuat algoritma dan fitur per model, kelas positif dan threshold churn, pemetaan dan profil segmen, serta target dan satuan regresi. Untuk evaluasi model, tampilkan metrik dan grafik dari eksperimen yang diserahkan Data. Jika hasil per pelanggan mencakup baris latih, gunakan hasil tersebut untuk eksplorasi dan cantumkan sumber data uji pada evaluasi.
+Kirim hasil per pelanggan sebagai `data.predictions`. Pertahankan `customerID` sebagai `customer_id` agar hasil dapat dicocokkan dengan pelanggan asal. Sertakan `data.processed_rows` dan `data.warnings`. Gunakan satuan biaya dataset untuk estimasi tagihan dan beri label simulasi pada rekomendasi retensi. Metadata model memuat algoritma dan fitur per model, kelas positif dan threshold churn, pemetaan dan profil segmen, serta target dan satuan regresi. Profil segmen menyertakan `customer_count`, `average_tenure_months` pada dataset aktif, dan `is_noise`. Untuk evaluasi model, tampilkan metrik dan grafik dari eksperimen yang diserahkan Data. Jika hasil per pelanggan mencakup baris latih, gunakan hasil tersebut untuk eksplorasi dan cantumkan sumber data uji pada evaluasi.
 
 ### Cara memakai fixture
 
