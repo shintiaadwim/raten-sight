@@ -2,6 +2,16 @@
 
 Folder ini berisi aplikasi Next.js, TypeScript, dan Tailwind CSS. Tim Frontend mengerjakan navigasi, ringkasan file churn, grafik eksplorasi, tampilan hasil, dan integrasi API. Scaffold menyediakan satu halaman awal. Petunjuk menjalankannya ada di [README utama](../README.md#menjalankan-scaffold).
 
+## Menjalankan Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Buka [http://localhost:3000](http://localhost:3000) di browser.
+
 ## Tugas pertama
 
 Buat navigasi Beranda, Eksplorasi, Prediksi & Segmen, dan Evaluasi. Mulai dari Beranda yang menampilkan nama dan versi dataset, jumlah pelanggan yang dianalisis, dan churn aktual jika label tersedia. Siapkan juga tampilan saat hasil sedang disiapkan atau gagal tersedia. Gunakan fixture berlabel demo sesuai [usulan kontrak API](../docs/api.md) dan cocokkan dengan respons Backend saat tersedia.

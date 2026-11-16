@@ -4,12 +4,13 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "RetenSight",
+  description: "Customer Churn & Retention Analytics",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id">
-      <body>{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
