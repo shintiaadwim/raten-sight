@@ -1,0 +1,130 @@
+{
+  "ready": {
+    "dataset_summary": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_name": "IBM Telco Customer Churn",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "processed_rows": 2,
+        "actual_churn": {
+          "yes_count": 1,
+          "no_count": 1,
+          "rate": 0.5
+        },
+        "distributions": {
+          "contract": [
+            { "label": "Month-to-month", "count": 1 },
+            { "label": "One year", "count": 1 }
+          ],
+          "tenure": [
+            { "label": "0–12 bulan", "count": 2 }
+          ],
+          "monthly_charges": [
+            { "label": "0–29.99", "count": 1 },
+            { "label": "30–59.99", "count": 1 }
+          ]
+        }
+      },
+      "error": null
+    },
+    "predictions": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "processed_rows": 2,
+        "warnings": [],
+        "predictions": [
+          {
+            "customer_id": "00123",
+            "churn_probability": 0.72,
+            "churn_prediction": "Yes",
+            "segment_id": 1,
+            "segment_name": "Masa langganan lebih panjang",
+            "predicted_monthly_charges": 51.75,
+            "recommendation": "Tawarkan peninjauan paket dan opsi kontrak."
+          },
+          {
+            "customer_id": "00456",
+            "churn_probability": 0.21,
+            "churn_prediction": "No",
+            "segment_id": 0,
+            "segment_name": "Pelanggan baru",
+            "predicted_monthly_charges": 20.0,
+            "recommendation": "Tindak lanjuti pengalaman penggunaan layanan awal."
+          }
+        ]
+      },
+      "error": null
+    },
+    "model_info": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "classification": {
+          "algorithm": "Logistic Regression",
+          "features": ["tenure", "Contract", "MonthlyCharges"],
+          "positive_class": "Yes",
+          "threshold": 0.5
+        },
+        "clustering": {
+          "algorithm": "K-Means",
+          "features": ["tenure", "MonthlyCharges", "TotalCharges"],
+          "segments": [
+            {
+              "segment_id": 0,
+              "segment_name": "Pelanggan baru",
+              "customer_count": 1,
+              "average_tenure_months": 0
+            },
+            {
+              "segment_id": 1,
+              "segment_name": "Masa langganan lebih panjang",
+              "customer_count": 1,
+              "average_tenure_months": 12
+            }
+          ]
+        },
+        "regression": {
+          "algorithm": "Ridge",
+          "features": ["tenure", "Contract"],
+          "target": "MonthlyCharges",
+          "unit": "satuan biaya dataset"
+        }
+      },
+      "error": null
+    }
+  },
+  "preparing": {
+    "dataset_summary": {
+      "is_demo": true,
+      "status": "preparing",
+      "dataset_name": "IBM Telco Customer Churn",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": null,
+      "error": null
+    }
+  },
+  "failed": {
+    "dataset_summary": {
+      "is_demo": true,
+      "status": "failed",
+      "dataset_name": "IBM Telco Customer Churn",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": null,
+      "error": {
+        "code": "INVALID_FIELD",
+        "message": "Kolom tenure harus berisi bilangan bulat nonnegatif.",
+        "row": 4,
+        "field": "tenure"
+      }
+    }
+  }
+}

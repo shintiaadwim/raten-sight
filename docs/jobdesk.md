@@ -63,9 +63,11 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 
 ### Tugas pertama — Baca file di server dan siapkan contoh respons
 
-- [ ] Jalankan FastAPI dari scaffold dan periksa `GET /api/health`. Catat cara menjalankan server untuk anggota tim lain.
+- [x] Jalankan FastAPI dari scaffold dan periksa `GET /api/health`. Catat cara menjalankan server untuk anggota tim lain. [Panduan dan hasil cek lokal](../backend/README.md#menjalankan-fastapi-dan-mengecek-health)
 - [ ] Sepakati lokasi file di server, skema dataset, versi file dan model, serta perlakuan untuk baris yang tidak memenuhi skema. Gunakan contoh dari Data untuk memastikan kedua role membaca kolom dan tipe dengan cara yang sama.
 - [ ] Sepakati bentuk ringkasan, hasil per pelanggan, metadata, dan pesan error dengan Frontend. Bagikan fixture berlabel demo untuk kondisi hasil siap, sedang disiapkan, dan gagal.
+
+[Draf kontrak](api.md) dan [fixture demo](../backend/fixtures/dashboard.demo.json) tersedia untuk dibahas dengan Data dan Frontend.
 
 ### Validasi dataset dan artefak
 
