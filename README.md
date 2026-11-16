@@ -1,6 +1,19 @@
 # RetenSight
 
-Scaffold proyek analitik pelanggan telekomunikasi. Tim akan mengembangkan prediksi churn, segmentasi pelanggan, dan estimasi tagihan bulanan.
+Scaffold dashboard analitik untuk file churn pelanggan telekomunikasi yang disiapkan tim. Dataset acuan adalah IBM Telco Customer Churn. Dashboard menampilkan eksplorasi data, prediksi churn, segmentasi pelanggan, estimasi tagihan bulanan, dan evaluasi model.
+
+## Alur aplikasi
+
+1. Tim Data memeriksa dataset, melatih dan mengevaluasi model secara offline, lalu menyerahkan versi sumber dataset, pipeline, dan metadata ke Backend.
+2. Backend memproses file otomatis saat dataset dan model pertama kali tersedia, lalu setiap kali salah satu versinya berubah. Hasil analisis disimpan dengan kedua versi tersebut agar bisa digunakan kembali.
+3. Frontend mengambil ringkasan dan hasil tersimpan melalui API saat pengguna membuka dashboard. Jika hasil sedang disiapkan, tampilkan status proses dan perbarui tampilan setelah hasil siap.
+
+| Halaman | Isi |
+| --- | --- |
+| Beranda | Nama dan versi dataset, jumlah pelanggan yang dianalisis, ringkasan churn aktual jika label tersedia, dan status kesiapan hasil |
+| Eksplorasi | Distribusi kontrak, masa berlangganan, tagihan, dan churn historis dari dataset |
+| Prediksi & Segmen | Probabilitas dan label prediksi churn, segmen, estimasi tagihan, dan simulasi rekomendasi per pelanggan |
+| Evaluasi Model | Perbandingan algoritma, metrik, dan grafik eksperimen dari tim Data |
 
 | Folder | Stack | Isi awal |
 | --- | --- | --- |
@@ -48,10 +61,10 @@ Gunakan branch per fitur dan PR. Sepakati [kontrak API dan artefak](docs/api.md)
 
 | Role | Pekerjaan pertama | Serah terima |
 | --- | --- | --- |
-| Frontend | Buat Beranda, Eksplorasi, Prediksi & Segmen, serta Evaluasi. Gunakan mock berlabel demo sesuai kontrak. | UI responsif, alur upload, penanganan loading dan error, integrasi API |
-| Backend | Implementasikan validasi CSV dan endpoint prediksi dengan respons demo berlabel. | API terdokumentasi, tes validasi, mekanisme pemuatan model, dan pengaturan CORS |
-| Data | Verifikasi dataset, kerjakan EDA, lalu bangun baseline klasifikasi, clustering, dan regresi. | Pipeline, versi dependensi, profil segmen, aturan retensi, dan metrik eksperimen |
+| Frontend | Buat Beranda dengan ringkasan dataset dan status hasil. Pakai mock berlabel demo untuk menyiapkan tampilan sebelum API tersedia. | Dashboard responsif, grafik, hasil per pelanggan, dan integrasi API. [Panduan Frontend](frontend/README.md) |
+| Backend | Siapkan pembacaan file di server, validasi dataset, dan respons demo untuk endpoint ringkasan. | Pemrosesan otomatis per versi, penyimpanan hasil, API terdokumentasi, dan pengujian. [Panduan Backend](backend/README.md) |
+| Data | Verifikasi file churn, buat EDA dan kamus data, lalu bangun baseline klasifikasi, clustering, dan regresi. | Dataset berversi, pipeline, versi dependensi, profil segmen, aturan retensi, dan metrik eksperimen. [Panduan Data](data/README.md) |
 
-Target integrasi pertama adalah satu CSV contoh yang bisa diunggah dan menghasilkan respons sesuai kontrak. Setelah itu, hubungkan pipeline terlatih, tampilkan evaluasi tersimpan, lalu ukur waktu prediksi satu pelanggan pada perangkat demo dengan target di bawah tiga detik.
+Target integrasi pertama adalah dashboard yang membaca ringkasan dan hasil model dari satu versi dataset yang dipasang di server. Periksa kecocokan hasil dengan `customerID`, waktu pemrosesan batch, dan waktu respons dashboard saat membaca hasil tersimpan.
 
-Untuk lingkup awal, gunakan satu dataset publik, training offline, serta rekomendasi retensi berbasis aturan. Proses unggahan untuk satu sesi. Penyimpanan permanen, akun, integrasi billing atau CRM, dan kampanye otomatis berada di luar lingkup awal.
+Untuk lingkup awal, gunakan satu dataset publik, training offline, dan rekomendasi retensi berbasis aturan sebagai simulasi pada dataset historis. Akun, integrasi billing atau CRM, dan kampanye otomatis berada di luar lingkup awal.
