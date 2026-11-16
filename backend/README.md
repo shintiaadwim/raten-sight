@@ -1,22 +1,22 @@
 # Backend
 
-Folder ini berisi layanan FastAPI untuk menerima CSV, memvalidasi data, menjalankan pipeline yang diserahkan tim Data, dan mengirim hasil ke Frontend. Scaffold menyediakan `GET /api/health`. Petunjuk menjalankan server ada di [README utama](../README.md#menjalankan-scaffold).
+Folder ini berisi layanan FastAPI untuk memvalidasi file churn yang dipasang di server, menjalankan pipeline dari tim Data, menyimpan hasil per kombinasi versi dataset dan model, serta menyediakan hasil melalui API. Scaffold menyediakan `GET /api/health`. Petunjuk menjalankan server ada di [README utama](../README.md#menjalankan-scaffold).
 
 ## Tugas pertama
 
-Sepakati kolom wajib dan opsional, batas unggahan, format error, serta perlakuan untuk baris invalid dengan tim Frontend dan Data. Lalu siapkan validasi CSV dan respons demo berlabel untuk `POST /api/predictions`. Tunjukkan satu contoh respons sukses dan satu kegagalan validasi yang bisa dijadikan fixture oleh Frontend. Gunakan [usulan kontrak API](../docs/api.md) sebagai titik awal.
+Sepakati versi sumber file, skema kolom per model, dan format ringkasan dengan Data dan Frontend. Siapkan cara membaca file yang dipasang di server, lalu bagikan contoh respons berlabel demo untuk hasil siap dan hasil belum siap. Gunakan [usulan kontrak API](../docs/api.md) sebagai titik awal.
 
 ## Urutan pengerjaan
 
-1. Terima CSV dan periksa format file, kolom, tipe, nilai kosong, kategori, serta batas ukuran dan jumlah baris sesuai keputusan tim.
-2. Bentuk respons demo yang konsisten untuk hasil per pelanggan, metadata, peringatan, dan error. Pertahankan `customerID` agar hasil bisa dicocokkan dengan baris asal.
-3. Atur CORS jika UI dan API memakai origin berbeda. Uji upload CSV melalui Frontend dengan respons demo.
-4. Muat pipeline terlatih beserta metadata dari tim Data. Jalankan inference dengan preprocessing yang sudah tersimpan di pipeline, terapkan aturan retensi, dan tangani fitur yang tidak lengkap sesuai kontrak.
-5. Sediakan metadata model dan evaluasi tersimpan melalui endpoint yang disepakati. Uji alur dengan model terlatih dan ukur waktu dari request hingga respons untuk satu pelanggan pada perangkat demo.
+1. Baca file dari lokasi yang disepakati tim. Periksa versi dataset, identitas pelanggan, kolom, tipe, serta kecocokan input dengan pipeline.
+2. Muat pipeline terlatih dan metadata model dari Data. Jalankan inference dengan preprocessing yang tersimpan, lalu terapkan aturan simulasi rekomendasi retensi. Cocokkan hasil dengan `customerID`.
+3. Jalankan pemrosesan otomatis saat dataset dan model pertama kali tersedia, lalu proses ulang saat salah satu versinya berubah. Simpan ringkasan dan hasil per pelanggan beserta kedua versi. Sajikan hasil yang sesuai dengan versi aktif setelah pemrosesan berhasil.
+4. Sediakan endpoint baca untuk status, ringkasan, hasil per pelanggan, metadata model, dan evaluasi. Atur CORS jika UI dan API memakai origin berbeda.
+5. Uji skenario file tersedia, file hilang atau skema tidak sesuai, hasil sedang disiapkan, dan pergantian versi. Ukur waktu pemrosesan batch dan waktu baca hasil tersimpan secara terpisah.
 
 ## Hasil serah terima
 
-- API terdokumentasi dengan contoh CSV, respons sukses, dan respons error.
-- Layanan inference yang membaca artefak model berversi dan mengembalikan hasil berdasarkan ID pelanggan.
-- Tes untuk CSV valid, kolom hilang, tipe data salah, serta kecocokan hasil dengan pelanggan asal.
-- Panduan menjalankan server, mengatur CORS, dan memasang versi artefak yang dipilih.
+- API terdokumentasi dengan contoh ringkasan, hasil per pelanggan, status proses, dan respons error.
+- Layanan yang memproses file churn otomatis per versi dataset atau model dan menyajikan hasil tersimpan.
+- Tes untuk validasi dataset, kecocokan hasil dengan ID pelanggan, dan pemrosesan ulang saat versi berubah.
+- Panduan menjalankan server, memasang dataset dan artefak, mengatur CORS, serta memeriksa kesiapan hasil.
