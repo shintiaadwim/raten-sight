@@ -1,10 +1,36 @@
 # Backend
 
-Folder ini berisi layanan FastAPI untuk memvalidasi file churn yang dipasang di server, menjalankan pipeline dari tim Data, menyimpan hasil per kombinasi versi dataset dan model, serta menyediakan hasil melalui API. Scaffold menyediakan `GET /api/health`. Petunjuk menjalankan server ada di [README utama](../README.md#menjalankan-scaffold).
+Folder ini berisi scaffold FastAPI dengan `GET /api/health`. Alur Backend yang direncanakan mencakup validasi file churn di server, inference dengan pipeline dari Data, dan penyajian hasil tersimpan melalui API.
+
+## Menjalankan FastAPI dan mengecek health
+
+1. Buka PowerShell dari folder utama repo, yaitu folder yang berisi `backend/`, `data/`, dan `frontend/`. Gunakan Python 3.11 atau 3.12.
+2. Untuk setup awal, buat virtual environment dan pasang dependensi.
+
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
+   ```
+
+3. Jalankan server dengan perintah berikut dan biarkan terminal terbuka.
+
+   ```powershell
+   .\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload
+   ```
+
+4. Buka [endpoint health](http://127.0.0.1:8000/api/health) di browser. Pada pemeriksaan lokal, `GET /api/health` mengembalikan HTTP 200 dengan respons berikut.
+
+   ```json
+   {"status":"ok"}
+   ```
+
+5. Buka [Swagger UI](http://127.0.0.1:8000/docs) untuk melihat dan mencoba endpoint scaffold. Tekan `Ctrl+C` di terminal untuk menghentikan server. Jika port 8000 sedang dipakai, tambahkan `--port 8001` ke perintah server dan buka alamat health pada port 8001.
 
 ## Tugas pertama
 
-Sepakati versi sumber file, skema kolom per model, dan format ringkasan dengan Data dan Frontend. Siapkan cara membaca file yang dipasang di server, lalu bagikan contoh respons berlabel demo untuk hasil siap dan hasil belum siap. Gunakan [usulan kontrak API](../docs/api.md) sebagai titik awal.
+Gunakan [draf kontrak dataset dan API](../docs/api.md) untuk menyepakati lokasi CSV, versi dataset dan model, tipe kolom, dan penanganan data invalid dengan Data. Cocokkan contoh CSV di draf dengan file dan skema fitur yang diserahkan Data.
+
+Bagikan [fixture dashboard](fixtures/dashboard.demo.json) kepada Frontend untuk mencoba kondisi `ready`, `preparing`, dan `failed`. File JSON berisi respons demo yang dapat dipakai Frontend sebagai mock. Bagian [cara memakai fixture](../docs/api.md#cara-memakai-fixture) memetakan contoh ke tiap endpoint.
 
 ## Urutan pengerjaan
 
