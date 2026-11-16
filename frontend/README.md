@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend
 
-## Getting Started
+Folder ini berisi aplikasi Next.js, TypeScript, dan Tailwind CSS. Tim Frontend mengerjakan navigasi, ringkasan file churn, grafik eksplorasi, tampilan hasil, dan integrasi API. Scaffold menyediakan satu halaman awal. Petunjuk menjalankannya ada di [README utama](../README.md#menjalankan-scaffold).
 
-First, run the development server:
+## Menjalankan Frontend
 
 ```bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) di browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tugas pertama
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Buat navigasi Beranda, Eksplorasi, Prediksi & Segmen, dan Evaluasi. Mulai dari Beranda yang menampilkan nama dan versi dataset, jumlah pelanggan yang dianalisis, dan churn aktual jika label tersedia. Siapkan juga tampilan saat hasil sedang disiapkan atau gagal tersedia. Gunakan fixture berlabel demo sesuai [usulan kontrak API](../docs/api.md) dan cocokkan dengan respons Backend saat tersedia.
 
-## Learn More
+## Urutan pengerjaan
 
-To learn more about Next.js, take a look at the following resources:
+1. Siapkan layout responsif dan navigasi. Saat Beranda dibuka, ambil ringkasan dari API dan tampilkan status jika hasil belum siap.
+2. Bangun halaman Eksplorasi untuk distribusi masa berlangganan, kontrak, tagihan, dan churn historis. Gunakan ringkasan dari versi dataset yang aktif.
+3. Buat halaman Prediksi & Segmen. Tampilkan probabilitas dan label churn, segmen, estimasi dalam satuan biaya dataset, serta simulasi rekomendasi per pelanggan. Beri label yang jelas untuk nilai aktual dan hasil model jika keduanya ditampilkan.
+4. Buat halaman Evaluasi untuk perbandingan model, metrik, dan grafik dari eksperimen tersimpan. Cantumkan versi model dan sumber evaluasi.
+5. Hubungkan UI ke API dan uji dashboard saat hasil tersedia, sedang disiapkan, atau gagal dimuat. Periksa tampilan dan navigasi pada layar kecil.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Hasil serah terima
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Empat halaman responsif yang terhubung ke API.
+- Komponen ringkasan dataset, tabel hasil, dan grafik yang dapat dipakai ulang.
+- Fixture berlabel demo untuk kondisi hasil siap, sedang diproses, dan gagal.
+- Panduan menjalankan Frontend dan mengatur alamat API, beserta langkah uji dashboard dengan dataset yang dipasang di server.
