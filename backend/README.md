@@ -1,6 +1,6 @@
 # Backend
 
-Folder ini berisi scaffold FastAPI dengan `GET /api/health`. Alur Backend yang direncanakan mencakup validasi file churn di server, inference dengan pipeline dari Data, dan penyajian hasil tersimpan melalui API.
+Layanan FastAPI memvalidasi file churn, menjalankan tiga pipeline dari Data, dan menyediakan ringkasan, prediksi per pelanggan, serta metadata model melalui API.
 
 ## Menjalankan FastAPI dan mengecek health
 
@@ -24,7 +24,28 @@ Folder ini berisi scaffold FastAPI dengan `GET /api/health`. Alur Backend yang d
    {"status":"ok"}
    ```
 
-5. Buka [Swagger UI](http://127.0.0.1:8000/docs) untuk melihat dan mencoba endpoint scaffold. Tekan `Ctrl+C` di terminal untuk menghentikan server. Jika port 8000 sedang dipakai, tambahkan `--port 8001` ke perintah server dan buka alamat health pada port 8001.
+5. Buka [Swagger UI](http://127.0.0.1:8000/docs) untuk melihat dan mencoba endpoint. Tekan `Ctrl+C` di terminal untuk menghentikan server. Jika port 8000 sedang dipakai, tambahkan `--port 8001` ke perintah server dan buka alamat health pada port 8001.
+
+## Memasang file dan model
+
+| Isi | Lokasi bawaan dari root repo | Variabel untuk mengganti lokasi |
+| --- | --- | --- |
+| CSV churn | `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` | `RETENSIGHT_DATASET_PATH` |
+| Manifest model | `backend/artifacts/manifest.json` | `RETENSIGHT_MODEL_MANIFEST` |
+| Hasil analisis | `backend/results/` | `RETENSIGHT_RESULTS_DIR` |
+
+Letakkan ketiga artefak pipeline di folder yang sama dengan manifest. Tim Data dapat menggunakan [contoh paket model](../docs/api.md#paket-model-dari-data) untuk menyiapkan file dan metadata sesuai hasil training. Dependensi Backend memakai daftar versi yang sama dengan folder Data.
+
+Backend memeriksa file sumber saat server mulai dan setiap dua detik setelah pemeriksaan terakhir selesai. Pasangan versi yang sudah memiliki hasil valid dibaca kembali dari JSON lokal. Jika versi berubah, hasil pasangan baru disimpan sebelum API beralih ke `ready`.
+
+Buka [ringkasan dataset](http://127.0.0.1:8000/api/dataset-summary) untuk melihat status. Jika statusnya `failed`, baca `error` dan versi pada respons, lalu periksa log terminal. Perubahan pada CSV, manifest, atau artefak memicu pemeriksaan ulang. Mulai ulang server jika perbaikannya menyangkut pemasangan dependensi atau izin folder hasil. Endpoint health tetap menunjukkan apakah FastAPI merespons.
+
+Untuk menjalankan tes Backend, pasang dependensi pengembangan lalu jalankan pytest dari root repo.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt
+.\.venv\Scripts\python.exe -m pytest backend/tests -q
+```
 
 ## Tugas pertama
 
