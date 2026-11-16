@@ -11,6 +11,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
+from backend.batch import BatchSettings
 from backend.model_bundle import REQUIRED_PACKAGES
 
 
@@ -86,3 +87,10 @@ def manifest_path(tmp_path, manifest_data, pipeline_bytes):
     for kind, content in pipeline_bytes.items():
         path.with_name(manifest_data[kind]["artifact"]).write_bytes(content)
     return path
+
+
+@pytest.fixture
+def batch_settings(tmp_path, sample_csv, manifest_path):
+    dataset = tmp_path / "churn.csv"
+    dataset.write_bytes(sample_csv)
+    return BatchSettings(dataset, manifest_path, tmp_path / "results", poll_seconds=0.02)
