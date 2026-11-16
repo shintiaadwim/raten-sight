@@ -57,13 +57,13 @@ Frontend dapat memakai ringkasan untuk menentukan tampilan status, lalu membaca 
 ### Lokasi dan versi
 
 - Gunakan `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` sebagai usulan lokasi file lokal dari root repo. Backend membaca file yang sudah ditempatkan tim di komputer yang menjalankan FastAPI.
-- Data menyerahkan `dataset_version` untuk salinan CSV dan `model_version` untuk paket pipeline beserta metadata, misalnya `dataset-v1` dan `model-v1`. Paket model dipasang di `backend/artifacts/`.
+- `dataset_version` berupa `sha256:<hash>` dari isi CSV yang diproses. Nilai ini bisa dicocokkan dengan hash file pada serah terima Data. Paket model beserta metadata dipasang di `backend/artifacts/`.
 - Gunakan kedua versi saat menyimpan dan menyajikan hasil. Perubahan pada salah satu versi memicu pemrosesan ulang file sesuai desain aplikasi.
 - Tim Data menyerahkan file berversi, pipeline lengkap dengan preprocessing, daftar fitur dan tipe input, versi dependensi, threshold churn, profil dan pemetaan ID segmen, aturan retensi, hasil evaluasi, serta contoh hasil per pelanggan. Training dilakukan offline.
 
 ### Draf skema CSV
 
-Usulan pembacaan memakai CSV UTF-8 dengan pemisah koma, header dengan nama kolom sesuai sumber, dan titik sebagai pemisah desimal. Cocokkan tabel ini dengan file acuan dan daftar fitur tiap pipeline yang diserahkan Data.
+Pembacaan memakai CSV UTF-8 dengan pemisah koma, header dengan nama kolom sesuai sumber, dan titik sebagai pemisah desimal. Kolom wajib mencakup `customerID`, `tenure`, `Contract`, dan `MonthlyCharges` untuk ringkasan, serta fitur yang dinyatakan oleh setiap pipeline. Cocokkan tabel ini dengan file acuan dan daftar fitur tiap pipeline yang diserahkan Data.
 
 | Kolom | Tipe dan arti |
 | --- | --- |
