@@ -21,33 +21,33 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 - [x] Pertahankan `customerID` sebagai identitas untuk menyatukan hasil. Keluarkan kolom tersebut dari daftar fitur ketiga model.
 - [x] Bungkus imputasi, encoding, scaling, dan estimator dalam pipeline sesuai kebutuhan masing-masing model. Gunakan scaling saat membandingkan metode berbasis jarak seperti KNN dan clustering.
 - [x] Untuk klasifikasi dan regresi, buat pembagian awal 80:20 dengan seed tetap. Lakukan stratifikasi berdasarkan `Churn` untuk klasifikasi. Gunakan pembagian dan fold yang sama untuk semua kandidat dalam satu tugas.
-- [ ] Lakukan tuning melalui CV lima fold pada data latih. Gunakan stratified CV untuk klasifikasi. Di setiap fold, fit preprocessing pada bagian latih fold tersebut. Simpan data uji untuk evaluasi akhir model terpilih.
+- [x] Lakukan tuning melalui CV lima fold pada data latih. Gunakan stratified CV untuk klasifikasi. Di setiap fold, fit preprocessing pada bagian latih fold tersebut. Simpan data uji untuk evaluasi akhir model terpilih.
 
 ### Eksperimen klasifikasi churn
 
-- [ ] Gunakan `Churn` sebagai target dengan `Yes` sebagai kelas positif. Catat daftar fitur yang dipakai dan pastikan label churn dikeluarkan dari input model.
-- [ ] Jalankan Dummy Classifier sebagai baseline. Bandingkan Logistic Regression, Decision Tree, Random Forest, KNN, dan Naive Bayes dengan aturan evaluasi yang sama.
-- [ ] Uji konfigurasi yang relevan, misalnya kedalaman pohon, jumlah tetangga, dan regularisasi. Bandingkan `class_weight` pada algoritma yang mendukungnya. Jika resampling dipilih, terapkan di bagian latih setiap fold.
-- [ ] Catat rerata dan simpangan baku skor CV per kandidat. Gunakan F1 kelas churn sebagai usulan pembanding utama dan baca recall, precision, serta ROC-AUC untuk memahami hasilnya.
-- [ ] Tentukan threshold akhir dari prediksi validasi model terpilih. Jelaskan dampaknya terhadap pelanggan churn yang berhasil terdeteksi dan pelanggan bertahan yang ikut ditandai.
-- [ ] Evaluasi model terpilih pada data uji. Simpan metrik, confusion matrix, kelas positif, dan threshold. Siapkan contoh probabilitas dan label yang konsisten dengan threshold tersebut.
+- [x] Gunakan `Churn` sebagai target dengan `Yes` sebagai kelas positif. Catat daftar fitur yang dipakai dan pastikan label churn dikeluarkan dari input model.
+- [x] Jalankan Dummy Classifier sebagai baseline. Bandingkan Logistic Regression, Decision Tree, Random Forest, KNN, dan Naive Bayes dengan aturan evaluasi yang sama.
+- [x] Uji konfigurasi yang relevan, misalnya kedalaman pohon, jumlah tetangga, dan regularisasi. Bandingkan `class_weight` pada algoritma yang mendukungnya. Jika resampling dipilih, terapkan di bagian latih setiap fold.
+- [x] Catat rerata dan simpangan baku skor CV per kandidat. Gunakan F1 kelas churn sebagai usulan pembanding utama dan baca recall, precision, serta ROC-AUC untuk memahami hasilnya.
+- [x] Tentukan threshold akhir dari prediksi validasi model terpilih. Jelaskan dampaknya terhadap pelanggan churn yang berhasil terdeteksi dan pelanggan bertahan yang ikut ditandai.
+- [x] Evaluasi model terpilih pada data uji. Simpan metrik, confusion matrix, kelas positif, dan threshold. Siapkan contoh probabilitas dan label yang konsisten dengan threshold tersebut.
 
 ### Eksperimen clustering pelanggan
 
-- [ ] Gunakan `tenure`, `MonthlyCharges`, dan `TotalCharges` sebagai fitur awal. Gunakan versi data dan preprocessing yang sama untuk membandingkan algoritma.
-- [ ] Bandingkan K-Means pada beberapa jumlah klaster dan catat inertia untuk analisis elbow. Uji Agglomerative Clustering pada beberapa jumlah klaster, serta DBSCAN dengan variasi `eps` dan `min_samples`.
-- [ ] Laporkan silhouette, Davies–Bouldin, dan Calinski–Harabasz jika jumlah klaster memenuhi syarat. Untuk DBSCAN, laporkan jumlah dan persentase titik noise serta cakupan baris yang masuk perhitungan skor.
-- [ ] Buat profil setiap segmen berdasarkan jumlah pelanggan, masa berlangganan, dan pola tagihan. Gunakan label `Churn` historis setelah klaster terbentuk untuk membaca komposisi churn per segmen.
-- [ ] Buat pemetaan ID ke nama segmen dan dokumentasikan perlakuan untuk titik noise jika algoritma terpilih menghasilkannya.
-- [ ] Verifikasi cara memberikan label segmen ketika Backend memproses versi dataset yang dipasang. Jika sebuah kandidat menghasilkan label saat fit, sepakati cara menyerahkan label untuk setiap versi dataset sebelum memilihnya untuk dashboard.
+- [x] Gunakan `tenure`, `MonthlyCharges`, dan `TotalCharges` sebagai fitur awal. Gunakan versi data dan preprocessing yang sama untuk membandingkan algoritma.
+- [x] Bandingkan K-Means pada beberapa jumlah klaster dan catat inertia untuk analisis elbow. Uji Agglomerative Clustering pada beberapa jumlah klaster, serta DBSCAN dengan variasi `eps` dan `min_samples`.
+- [x] Laporkan silhouette, Davies–Bouldin, dan Calinski–Harabasz jika jumlah klaster memenuhi syarat. Untuk DBSCAN, laporkan jumlah dan persentase titik noise serta cakupan baris yang masuk perhitungan skor.
+- [x] Buat profil setiap segmen berdasarkan jumlah pelanggan, masa berlangganan, dan pola tagihan. Gunakan label `Churn` historis setelah klaster terbentuk untuk membaca komposisi churn per segmen.
+- [x] Buat pemetaan ID ke nama segmen dan dokumentasikan perlakuan untuk titik noise jika algoritma terpilih menghasilkannya.
+- [x] Verifikasi cara memberikan label segmen ketika Backend memproses versi dataset yang dipasang. Jika sebuah kandidat menghasilkan label saat fit, sepakati cara menyerahkan label untuk setiap versi dataset sebelum memilihnya untuk dashboard.
 
 ### Eksperimen regresi tagihan bulanan
 
-- [ ] Gunakan `MonthlyCharges` sebagai target. Keluarkan `MonthlyCharges`, `TotalCharges`, `Churn`, dan `customerID` dari fitur. Catat satuan biaya dataset.
-- [ ] Jalankan Dummy Regressor sebagai baseline. Bandingkan Linear Regression, Ridge atau Lasso, Decision Tree Regressor, dan Random Forest Regressor.
-- [ ] Uji konfigurasi seperti tingkat regularisasi dan kedalaman pohon menggunakan fold yang sama. Simpan rerata dan simpangan baku skor CV per kandidat.
-- [ ] Gunakan MAE sebagai usulan pembanding utama dan laporkan RMSE serta R². Jelaskan besarnya kesalahan dalam satuan biaya dataset.
-- [ ] Simpan hasil evaluasi data uji untuk model terpilih. Buat grafik aktual versus prediksi dan grafik residual. Verifikasi pipeline menggunakan contoh input yang hanya memuat fitur regresi.
+- [x] Gunakan `MonthlyCharges` sebagai target. Keluarkan `MonthlyCharges`, `TotalCharges`, `Churn`, dan `customerID` dari fitur. Catat satuan biaya dataset.
+- [x] Jalankan Dummy Regressor sebagai baseline. Bandingkan Linear Regression, Ridge atau Lasso, Decision Tree Regressor, dan Random Forest Regressor.
+- [x] Uji konfigurasi seperti tingkat regularisasi dan kedalaman pohon menggunakan fold yang sama. Simpan rerata dan simpangan baku skor CV per kandidat.
+- [x] Gunakan MAE sebagai usulan pembanding utama dan laporkan RMSE serta R². Jelaskan besarnya kesalahan dalam satuan biaya dataset.
+- [x] Simpan hasil evaluasi data uji untuk model terpilih. Buat grafik aktual versus prediksi dan grafik residual. Verifikasi pipeline menggunakan contoh input yang hanya memuat fitur regresi.
 
 ### Ekspor dan serah terima Data
 
