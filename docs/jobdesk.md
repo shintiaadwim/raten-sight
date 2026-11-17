@@ -51,13 +51,13 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 
 ### Ekspor dan serah terima Data
 
-- [ ] Buat tiga tabel eksperimen yang mencantumkan kandidat, parameter, preprocessing, metrik, dan alasan pemilihan model. Beri identitas dataset dan versi model pada setiap hasil yang ditampilkan di dashboard.
-- [ ] Simpan hasil eksperimen di `data/outputs/`. Siapkan perintah yang dapat dijalankan ulang untuk cleaning, pelatihan, evaluasi, dan ekspor.
-- [ ] Serahkan file churn berversi, artefak terpilih dengan preprocessing, dan versi dependensi. Gunakan format yang disepakati, misalnya `.joblib`, untuk dipasang oleh Backend di `backend/artifacts/`.
-- [ ] Sertakan metadata skema fitur, urutan atau tipe fitur yang diperlukan, kelas positif, threshold, pemetaan segmen, profil segmen, satuan biaya, serta sumber evaluasi.
-- [ ] Susun aturan simulasi retensi. Tulis kondisi risiko dan segmen, rekomendasi yang dihasilkan, urutan aturan saat beberapa kondisi terpenuhi, dan perlakuan saat hasil yang diperlukan belum tersedia.
-- [ ] Muat ulang artefak pada proses Python baru. Jalankan baris contoh dan cocokkan probabilitas, label churn, segmen, serta estimasi tagihan dengan hasil yang dicatat sebelum ekspor.
-- [ ] Serahkan contoh hasil per `customerID`, tabel dan data grafik evaluasi, serta catatan setup dependensi. Selesaikan serah terima setelah Backend bisa membaca artefak dan mencocokkan hasil untuk baris contoh.
+- [x] Buat tiga tabel eksperimen yang mencantumkan kandidat, parameter, preprocessing, metrik, dan alasan pemilihan model. Beri identitas dataset dan versi model pada setiap hasil yang ditampilkan di dashboard.
+- [x] Simpan hasil eksperimen di `data/outputs/`. Siapkan perintah yang dapat dijalankan ulang untuk cleaning, pelatihan, evaluasi, dan ekspor.
+- [x] Serahkan file churn berversi, artefak terpilih dengan preprocessing, dan versi dependensi. Gunakan format yang disepakati, misalnya `.joblib`, untuk dipasang oleh Backend di `backend/artifacts/`.
+- [x] Sertakan metadata skema fitur, urutan atau tipe fitur yang diperlukan, kelas positif, threshold, pemetaan segmen, profil segmen, satuan biaya, serta sumber evaluasi.
+- [x] Susun aturan simulasi retensi. Tulis kondisi risiko dan segmen, rekomendasi yang dihasilkan, urutan aturan saat beberapa kondisi terpenuhi, dan perlakuan saat hasil yang diperlukan belum tersedia.
+- [x] Muat ulang artefak pada proses Python baru. Jalankan baris contoh dan cocokkan probabilitas, label churn, segmen, serta estimasi tagihan dengan hasil yang dicatat sebelum ekspor.
+- [x] Serahkan contoh hasil per `customerID`, tabel dan data grafik evaluasi, serta catatan setup dependensi. Selesaikan serah terima setelah Backend bisa membaca artefak dan mencocokkan hasil untuk baris contoh.
 
 ## 2. Backend
 
