@@ -8,19 +8,19 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 
 ### Tugas pertama — Verifikasi dataset dan bagikan skema
 
-- [ ] Tempatkan file churn acuan di `data/raw/`. Catat nama file, sumber, dan versi dataset yang digunakan tim.
-- [ ] Periksa jumlah baris dan kolom, distribusi `Churn`, nilai kosong di `TotalCharges`, serta ID yang kosong atau duplikat. Catat jumlah baris sebelum dan sesudah setiap keputusan cleaning yang mengubah jumlah data.
-- [ ] Buat kamus data berisi nama kolom, arti, tipe, kategori atau rentang nilai, unit, dan contoh. Tandai kolom yang menjadi target, fitur, atau identitas.
-- [ ] Bagikan daftar fitur dan tipe input **per model**, satu baris contoh dari file acuan, dan cara mencocokkan hasil melalui `customerID` kepada Backend. Bagikan definisi ringkasan untuk grafik eksplorasi kepada Frontend.
+- [x] Tempatkan file churn acuan di `data/raw/`. Catat nama file, sumber, dan versi dataset yang digunakan tim.
+- [x] Periksa jumlah baris dan kolom, distribusi `Churn`, nilai kosong di `TotalCharges`, serta ID yang kosong atau duplikat. Catat jumlah baris sebelum dan sesudah setiap keputusan cleaning yang mengubah jumlah data.
+- [x] Buat kamus data berisi nama kolom, arti, tipe, kategori atau rentang nilai, unit, dan contoh. Tandai kolom yang menjadi target, fitur, atau identitas.
+- [x] Bagikan daftar fitur dan tipe input **per model**, satu baris contoh dari file acuan, dan cara mencocokkan hasil melalui `customerID` kepada Backend. Bagikan definisi ringkasan untuk grafik eksplorasi kepada Frontend.
 
 ### EDA dan preprocessing
 
-- [ ] Buat notebook EDA yang memuat jumlah dan proporsi churn, distribusi masa berlangganan dan tagihan, serta distribusi kontrak dan layanan. Catat penyebut untuk setiap persentase agar angka bisa diperiksa.
-- [ ] Konversi `TotalCharges` ke numerik, periksa nilai kosong setelah konversi, lalu dokumentasikan perlakuan yang dipilih. Jelaskan bagaimana pipeline menangani input serupa saat Backend menjalankan analisis.
-- [ ] Dokumentasikan perlakuan untuk kategori seperti `No internet service`, `No phone service`, dan kategori yang belum pernah muncul saat fit.
-- [ ] Pertahankan `customerID` sebagai identitas untuk menyatukan hasil. Keluarkan kolom tersebut dari daftar fitur ketiga model.
-- [ ] Bungkus imputasi, encoding, scaling, dan estimator dalam pipeline sesuai kebutuhan masing-masing model. Gunakan scaling saat membandingkan metode berbasis jarak seperti KNN dan clustering.
-- [ ] Untuk klasifikasi dan regresi, buat pembagian awal 80:20 dengan seed tetap. Lakukan stratifikasi berdasarkan `Churn` untuk klasifikasi. Gunakan pembagian dan fold yang sama untuk semua kandidat dalam satu tugas.
+- [x] Buat notebook EDA yang memuat jumlah dan proporsi churn, distribusi masa berlangganan dan tagihan, serta distribusi kontrak dan layanan. Catat penyebut untuk setiap persentase agar angka bisa diperiksa.
+- [x] Konversi `TotalCharges` ke numerik, periksa nilai kosong setelah konversi, lalu dokumentasikan perlakuan yang dipilih. Jelaskan bagaimana pipeline menangani input serupa saat Backend menjalankan analisis.
+- [x] Dokumentasikan perlakuan untuk kategori seperti `No internet service`, `No phone service`, dan kategori yang belum pernah muncul saat fit.
+- [x] Pertahankan `customerID` sebagai identitas untuk menyatukan hasil. Keluarkan kolom tersebut dari daftar fitur ketiga model.
+- [x] Bungkus imputasi, encoding, scaling, dan estimator dalam pipeline sesuai kebutuhan masing-masing model. Gunakan scaling saat membandingkan metode berbasis jarak seperti KNN dan clustering.
+- [x] Untuk klasifikasi dan regresi, buat pembagian awal 80:20 dengan seed tetap. Lakukan stratifikasi berdasarkan `Churn` untuk klasifikasi. Gunakan pembagian dan fold yang sama untuk semua kandidat dalam satu tugas.
 - [ ] Lakukan tuning melalui CV lima fold pada data latih. Gunakan stratified CV untuk klasifikasi. Di setiap fold, fit preprocessing pada bagian latih fold tersebut. Simpan data uji untuk evaluasi akhir model terpilih.
 
 ### Eksperimen klasifikasi churn
