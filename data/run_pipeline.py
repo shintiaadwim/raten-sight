@@ -168,6 +168,7 @@ def main():
             "ROC_AUC_Mean": round(float(scores["test_roc_auc"].mean()), 4),
             "ROC_AUC_Std": round(float(scores["test_roc_auc"].std()), 4),
             "Accuracy_Mean": round(float(scores["test_accuracy"].mean()), 4),
+            "Accuracy_Std": round(float(scores["test_accuracy"].std()), 4),
             "Selected": name == "Random Forest (depth=8, Balanced)",
             "Alasan_Pemilihan_Catatan": reason
         })
@@ -348,16 +349,17 @@ def main():
         is_high_bill = row["monthly_charges_mean"] >= median_mc
         if not is_loyal and is_high_bill:
             name = "Pelanggan Baru Tagihan Tinggi (Rentan)"
-            desc = "Masa langganan pendek dengan tagihan bulanan tinggi; memiliki tingkat churn historis tertinggi (48.24%)."
+            desc = "Masa langganan pendek dengan tagihan bulanan tinggi."
         elif not is_loyal and not is_high_bill:
             name = "Pelanggan Baru Paket Hemat"
-            desc = "Masa langganan pendek dengan paket dasar hemat; tingkat churn menengah (24.66%)."
+            desc = "Masa langganan pendek dengan paket dasar hemat."
         elif is_loyal and is_high_bill:
             name = "Pelanggan Loyal Premium (High-Value)"
-            desc = "Masa langganan panjang dengan layanan lengkap & tagihan tinggi; kontributor pendapatan terbesar (churn 15.39%)."
+            desc = "Masa langganan panjang dengan tagihan bulanan tinggi."
         else:
             name = "Pelanggan Loyal Paket Hemat"
-            desc = "Masa langganan panjang dengan tagihan rendah; segmen paling stabil dengan churn terendah (5.00%)."
+            desc = "Masa langganan panjang dengan tagihan bulanan rendah."
+        desc += f" Tingkat churn historis {row['historical_churn_rate_pct']:.2f}%."
         segment_map[str(sid)] = name
         segment_descriptions[sid] = desc
 
@@ -464,7 +466,7 @@ def main():
         "mae_usd": round(float(mean_absolute_error(y_reg_test, y_reg_pred_test)), 4),
         "rmse_usd": round(float(root_mean_squared_error(y_reg_test, y_reg_pred_test)), 4),
         "r2": round(float(r2_score(y_reg_test, y_reg_pred_test)), 4),
-        "error_explanation": "Rata-rata kesalahan absolut (MAE) prediksi tagihan bulanan hanya sebesar $0.79 USD pada rentang tagihan $18.25 - $118.75 USD.",
+        "error_explanation": f"Rata-rata kesalahan absolut pada data uji sebesar {mean_absolute_error(y_reg_test, y_reg_pred_test):.4f} {CURRENCY_UNIT}.",
         "actual_vs_predicted_and_residuals_sample": reg_chart_points
     }
 
@@ -494,7 +496,7 @@ def main():
         seg_id = int(sample_segs[i])
         seg_name = segment_map.get(str(seg_id), "Unassigned / Perlu Tinjauan Manual")
         mc_pred = round(float(sample_mc_preds[i]), 2)
-        rec_text = evaluate_retention_rule(prob_v, pred_lbl, seg_id)
+        rec_text = evaluate_retention_rule(float(sample_probs[i]), pred_lbl, seg_id)
         sample_records.append({
             "customer_id": cid,
             "actual_churn": str(sample_df.iloc[i]["Churn"]),
@@ -541,6 +543,7 @@ def main():
                 "selected_model": selected_clf_name,
                 "target_column": "Churn",
                 "positive_class": POSITIVE_CLASS,
+                "model_positive_class": 1,
                 "threshold": best_th,
                 "required_features": clf_features,
                 "feature_types": {c: feature_dtypes[c] for c in clf_features},
@@ -561,10 +564,10 @@ def main():
                 "evaluation_source": "Full Dataset Unsupervised Internal Metrics (N = 7,043)",
                 "internal_metrics": {
                     "n_clusters": 4,
-                    "inertia": 4148.48,
-                    "silhouette": 0.4722,
-                    "davies_bouldin": 0.7079,
-                    "calinski_harabasz": 9603.99,
+                    "inertia": float(selected_cluster_pipe.named_steps["model"].inertia_),
+                    "silhouette": float(silhouette_score(X_scaled, df["segment_id"])),
+                    "davies_bouldin": float(davies_bouldin_score(X_scaled, df["segment_id"])),
+                    "calinski_harabasz": float(calinski_harabasz_score(X_scaled, df["segment_id"])),
                     "noise_count": 0,
                     "coverage_pct": 100.0
                 }

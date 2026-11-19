@@ -1,0 +1,533 @@
+{
+  "ready": {
+    "dataset_summary": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_name": "IBM Telco Customer Churn",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "processed_rows": 2,
+        "actual_churn": {
+          "yes_count": 1,
+          "no_count": 1,
+          "rate": 0.5
+        },
+        "distributions": {
+          "contract": [
+            {
+              "label": "Month-to-month",
+              "count": 1
+            },
+            {
+              "label": "One year",
+              "count": 1
+            }
+          ],
+          "tenure": [
+            {
+              "label": "0–12 bulan",
+              "count": 2
+            },
+            {
+              "label": "13–24 bulan",
+              "count": 0
+            },
+            {
+              "label": "25–48 bulan",
+              "count": 0
+            },
+            {
+              "label": "49+ bulan",
+              "count": 0
+            }
+          ],
+          "monthly_charges": [
+            {
+              "label": "0–<30",
+              "count": 1
+            },
+            {
+              "label": "30–<60",
+              "count": 1
+            },
+            {
+              "label": "60–<90",
+              "count": 0
+            },
+            {
+              "label": "90+",
+              "count": 0
+            }
+          ]
+        }
+      },
+      "error": null
+    },
+    "predictions": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "processed_rows": 2,
+        "warnings": [],
+        "predictions": [
+          {
+            "customer_id": "00123",
+            "churn_probability": 0.72,
+            "churn_prediction": "Yes",
+            "segment_id": 1,
+            "segment_name": "Masa langganan lebih panjang",
+            "predicted_monthly_charges": 51.75,
+            "recommendation": "Tawarkan peninjauan paket dan opsi kontrak."
+          },
+          {
+            "customer_id": "00456",
+            "churn_probability": 0.21,
+            "churn_prediction": "No",
+            "segment_id": 0,
+            "segment_name": "Pelanggan baru",
+            "predicted_monthly_charges": 20.0,
+            "recommendation": "Tindak lanjuti pengalaman penggunaan layanan awal."
+          }
+        ]
+      },
+      "error": null
+    },
+    "model_info": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "classification": {
+          "algorithm": "Logistic Regression",
+          "features": [
+            "tenure",
+            "Contract",
+            "MonthlyCharges"
+          ],
+          "positive_class": "Yes",
+          "threshold": 0.5
+        },
+        "clustering": {
+          "algorithm": "K-Means",
+          "features": [
+            "tenure",
+            "MonthlyCharges",
+            "TotalCharges"
+          ],
+          "noise_label": null,
+          "segments": [
+            {
+              "segment_id": 0,
+              "segment_name": "Pelanggan baru",
+              "customer_count": 1,
+              "average_tenure_months": 0,
+              "is_noise": false
+            },
+            {
+              "segment_id": 1,
+              "segment_name": "Masa langganan lebih panjang",
+              "customer_count": 1,
+              "average_tenure_months": 12,
+              "is_noise": false
+            }
+          ]
+        },
+        "regression": {
+          "algorithm": "Ridge",
+          "features": [
+            "tenure",
+            "Contract"
+          ],
+          "target": "MonthlyCharges",
+          "unit": "satuan biaya dataset"
+        }
+      },
+      "error": null
+    },
+    "evaluations": {
+      "is_demo": true,
+      "status": "ready",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": {
+        "dataset_version": "telco-churn-v1.0",
+        "model_version": "retensight-models-v1.0",
+        "currency_unit": "USD",
+        "classification": {
+          "cv_candidates": [
+            {
+              "dataset_version": "telco-churn-v1.0",
+              "model_version": "retensight-models-v1.0",
+              "Kandidat": "Random Forest (depth=8, Balanced)",
+              "Parameter": "n_estimators=200, max_depth=8, class_weight=balanced",
+              "Preprocessing": "Num: SimpleImputer(constant=0.0) + StandardScaler | Cat: SimpleImputer(most_frequent) + OneHotEncoder(handle_unknown='ignore')",
+              "F1_Mean": 0.6327,
+              "F1_Std": 0.0144,
+              "Recall_Mean": 0.7579,
+              "Recall_Std": 0.0254,
+              "Precision_Mean": 0.5432,
+              "Precision_Std": 0.0121,
+              "ROC_AUC_Mean": 0.8463,
+              "ROC_AUC_Std": 0.0093,
+              "Accuracy_Mean": 0.7666,
+              "Accuracy_Std": 0.0087,
+              "Selected": true,
+              "Alasan_Pemilihan_Catatan": "MODEL TERPILIH: Skor F1 CV tertinggi (0.6327) & ROC-AUC tertinggi (0.8463) dengan variasi antar-fold rendah"
+            },
+            {
+              "dataset_version": "telco-churn-v1.0",
+              "model_version": "retensight-models-v1.0",
+              "Kandidat": "Logistic Regression (Balanced, C=0.1)",
+              "Parameter": "C=0.1, class_weight=balanced",
+              "Preprocessing": "Num: SimpleImputer(constant=0.0) + StandardScaler | Cat: SimpleImputer(most_frequent) + OneHotEncoder(handle_unknown='ignore')",
+              "F1_Mean": 0.6295,
+              "F1_Std": 0.0209,
+              "Recall_Mean": 0.798,
+              "Recall_Std": 0.0339,
+              "Precision_Mean": 0.5199,
+              "Precision_Std": 0.0172,
+              "ROC_AUC_Mean": 0.8455,
+              "ROC_AUC_Std": 0.0119,
+              "Accuracy_Mean": 0.7508,
+              "Accuracy_Std": 0.0137,
+              "Selected": false,
+              "Alasan_Pemilihan_Catatan": "Kandidat kuat peringkat ke-2 (F1 CV 0.6295, Recall 0.7980)"
+            }
+          ],
+          "test_evaluation": {
+            "dataset_version": "telco-churn-v1.0",
+            "model_version": "retensight-models-v1.0",
+            "evaluation_source": "Hold-out Test Set (20% = 1,409 rows, stratified, seed=42)",
+            "selected_model": "Random Forest (depth=8, Balanced)",
+            "positive_class": "Yes",
+            "threshold": 0.55,
+            "test_size": 1409,
+            "f1": 0.6253,
+            "recall": 0.7139,
+            "precision": 0.5563,
+            "roc_auc": 0.8416,
+            "accuracy": 0.7729,
+            "confusion_matrix": {
+              "tn": 822,
+              "fp": 213,
+              "fn": 107,
+              "tp": 267
+            },
+            "threshold_validation_curve": [
+              {
+                "threshold": 0.3,
+                "f1_oof": 0.5953,
+                "recall_oof": 0.899,
+                "precision_oof": 0.445,
+                "tp": 1344,
+                "fn": 151,
+                "fp": 1676,
+                "tn": 2463
+              },
+              {
+                "threshold": 0.35,
+                "f1_oof": 0.6096,
+                "recall_oof": 0.8736,
+                "precision_oof": 0.4681,
+                "tp": 1306,
+                "fn": 189,
+                "fp": 1484,
+                "tn": 2655
+              },
+              {
+                "threshold": 0.4,
+                "f1_oof": 0.6204,
+                "recall_oof": 0.8401,
+                "precision_oof": 0.4918,
+                "tp": 1256,
+                "fn": 239,
+                "fp": 1298,
+                "tn": 2841
+              },
+              {
+                "threshold": 0.45,
+                "f1_oof": 0.6264,
+                "recall_oof": 0.8013,
+                "precision_oof": 0.5142,
+                "tp": 1198,
+                "fn": 297,
+                "fp": 1132,
+                "tn": 3007
+              },
+              {
+                "threshold": 0.5,
+                "f1_oof": 0.6328,
+                "recall_oof": 0.7579,
+                "precision_oof": 0.5431,
+                "tp": 1133,
+                "fn": 362,
+                "fp": 953,
+                "tn": 3186
+              },
+              {
+                "threshold": 0.55,
+                "f1_oof": 0.6356,
+                "recall_oof": 0.7171,
+                "precision_oof": 0.5708,
+                "tp": 1072,
+                "fn": 423,
+                "fp": 806,
+                "tn": 3333
+              },
+              {
+                "threshold": 0.6,
+                "f1_oof": 0.6246,
+                "recall_oof": 0.6515,
+                "precision_oof": 0.5998,
+                "tp": 974,
+                "fn": 521,
+                "fp": 650,
+                "tn": 3489
+              },
+              {
+                "threshold": 0.65,
+                "f1_oof": 0.6092,
+                "recall_oof": 0.5839,
+                "precision_oof": 0.6368,
+                "tp": 873,
+                "fn": 622,
+                "fp": 498,
+                "tn": 3641
+              },
+              {
+                "threshold": 0.7,
+                "f1_oof": 0.5809,
+                "recall_oof": 0.5117,
+                "precision_oof": 0.6716,
+                "tp": 765,
+                "fn": 730,
+                "fp": 374,
+                "tn": 3765
+              }
+            ]
+          }
+        },
+        "clustering": {
+          "candidates": [
+            {
+              "dataset_version": "telco-churn-v1.0",
+              "model_version": "retensight-models-v1.0",
+              "Kandidat": "K-Means (k=2)",
+              "Parameter": "n_clusters=2, n_init=10, random_state=42",
+              "Preprocessing": "Num (tenure, MonthlyCharges, TotalCharges): SimpleImputer(constant=0.0) + StandardScaler",
+              "Jumlah_Klaster": 2,
+              "Inertia": 9712.11,
+              "Silhouette": 0.4797,
+              "Davies_Bouldin": 0.7797,
+              "Calinski_Harabasz": 8276.91,
+              "Noise_Count": 0,
+              "Noise_Pct (%)": 0.0,
+              "Coverage_Pct (%)": 100.0,
+              "Selected": false,
+              "Alasan_Pemilihan_Catatan": "Pembanding variasi jumlah klaster K-Means"
+            },
+            {
+              "dataset_version": "telco-churn-v1.0",
+              "model_version": "retensight-models-v1.0",
+              "Kandidat": "K-Means (k=3)",
+              "Parameter": "n_clusters=3, n_init=10, random_state=42",
+              "Preprocessing": "Num (tenure, MonthlyCharges, TotalCharges): SimpleImputer(constant=0.0) + StandardScaler",
+              "Jumlah_Klaster": 3,
+              "Inertia": 6186.19,
+              "Silhouette": 0.4515,
+              "Davies_Bouldin": 0.8541,
+              "Calinski_Harabasz": 8502.61,
+              "Noise_Count": 0,
+              "Noise_Pct (%)": 0.0,
+              "Coverage_Pct (%)": 100.0,
+              "Selected": false,
+              "Alasan_Pemilihan_Catatan": "Pembanding variasi jumlah klaster K-Means"
+            }
+          ],
+          "elbow_curve": [
+            {
+              "k": 2,
+              "inertia": 9712.11
+            },
+            {
+              "k": 3,
+              "inertia": 6186.19
+            },
+            {
+              "k": 4,
+              "inertia": 4148.48
+            },
+            {
+              "k": 5,
+              "inertia": 3111.4
+            },
+            {
+              "k": 6,
+              "inertia": 2562.93
+            }
+          ],
+          "segment_profiles": [
+            {
+              "segment_id": 0,
+              "customer_count": 1703,
+              "tenure_mean": 10.21,
+              "monthly_charges_mean": 31.78,
+              "total_charges_mean": 302.15,
+              "churn_yes_count": 420,
+              "population_pct": 24.18,
+              "historical_churn_rate_pct": 24.66,
+              "segment_name": "Pelanggan Baru Paket Hemat",
+              "description": "Masa langganan pendek dengan paket dasar hemat. Tingkat churn historis 24.66%."
+            },
+            {
+              "segment_id": 1,
+              "customer_count": 1904,
+              "tenure_mean": 59.53,
+              "monthly_charges_mean": 93.31,
+              "total_charges_mean": 5548.65,
+              "churn_yes_count": 293,
+              "population_pct": 27.03,
+              "historical_churn_rate_pct": 15.39,
+              "segment_name": "Pelanggan Loyal Premium (High-Value)",
+              "description": "Masa langganan panjang dengan tagihan bulanan tinggi. Tingkat churn historis 15.39%."
+            },
+            {
+              "segment_id": 2,
+              "customer_count": 2276,
+              "tenure_mean": 15.42,
+              "monthly_charges_mean": 80.78,
+              "total_charges_mean": 1251.17,
+              "churn_yes_count": 1098,
+              "population_pct": 32.32,
+              "historical_churn_rate_pct": 48.24,
+              "segment_name": "Pelanggan Baru Tagihan Tinggi (Rentan)",
+              "description": "Masa langganan pendek dengan tagihan bulanan tinggi. Tingkat churn historis 48.24%."
+            },
+            {
+              "segment_id": 3,
+              "customer_count": 1160,
+              "tenure_mean": 53.57,
+              "monthly_charges_mean": 34.91,
+              "total_charges_mean": 1835.62,
+              "churn_yes_count": 58,
+              "population_pct": 16.47,
+              "historical_churn_rate_pct": 5.0,
+              "segment_name": "Pelanggan Loyal Paket Hemat",
+              "description": "Masa langganan panjang dengan tagihan bulanan rendah. Tingkat churn historis 5.00%."
+            }
+          ]
+        },
+        "regression": {
+          "cv_candidates": [
+            {
+              "dataset_version": "telco-churn-v1.0",
+              "model_version": "retensight-models-v1.0",
+              "Kandidat": "Lasso Regression (alpha=0.01)",
+              "Parameter": "alpha=0.01",
+              "Preprocessing": "Num (SeniorCitizen, tenure): SimpleImputer(median) + StandardScaler | Cat (15 layanan/profil): SimpleImputer(most_frequent) + OneHotEncoder(handle_unknown='ignore')",
+              "MAE_Mean (USD)": 0.7824,
+              "MAE_Std (USD)": 0.0263,
+              "RMSE_Mean (USD)": 1.0216,
+              "RMSE_Std (USD)": 0.0329,
+              "R2_Mean": 0.9988,
+              "R2_Std": 0.0001,
+              "Selected": false,
+              "Alasan_Pemilihan_Catatan": "MAE kompetitif ($0.7824 USD) namun konvergensi iteratif lebih lambat dari Ridge"
+            },
+            {
+              "dataset_version": "telco-churn-v1.0",
+              "model_version": "retensight-models-v1.0",
+              "Kandidat": "Ridge Regression (alpha=0.1)",
+              "Parameter": "alpha=0.1",
+              "Preprocessing": "Num (SeniorCitizen, tenure): SimpleImputer(median) + StandardScaler | Cat (15 layanan/profil): SimpleImputer(most_frequent) + OneHotEncoder(handle_unknown='ignore')",
+              "MAE_Mean (USD)": 0.7832,
+              "MAE_Std (USD)": 0.0268,
+              "RMSE_Mean (USD)": 1.0219,
+              "RMSE_Std (USD)": 0.0337,
+              "R2_Mean": 0.9988,
+              "R2_Std": 0.0001,
+              "Selected": false,
+              "Alasan_Pemilihan_Catatan": "Sangat akurat, regularisasi L2 ringan"
+            }
+          ],
+          "test_evaluation": {
+            "dataset_version": "telco-churn-v1.0",
+            "model_version": "retensight-models-v1.0",
+            "evaluation_source": "Hold-out Test Set (20% = 1,409 rows, seed=42)",
+            "selected_model": "Ridge Regression (alpha=1.0)",
+            "currency_unit": "USD",
+            "test_size": 1409,
+            "mae_usd": 0.7893,
+            "rmse_usd": 1.0515,
+            "r2": 0.9988,
+            "error_explanation": "Rata-rata kesalahan absolut pada data uji sebesar 0.7893 USD.",
+            "actual_vs_predicted_and_residuals_sample": [
+              {
+                "customer_id": "1024-GUALD",
+                "actual_monthly_charges": 24.8,
+                "predicted_monthly_charges": 24.98,
+                "residual": -0.18
+              },
+              {
+                "customer_id": "7998-ZLXWN",
+                "actual_monthly_charges": 20.45,
+                "predicted_monthly_charges": 20.0,
+                "residual": 0.45
+              },
+              {
+                "customer_id": "9402-ORRAH",
+                "actual_monthly_charges": 91.5,
+                "predicted_monthly_charges": 89.88,
+                "residual": 1.62
+              },
+              {
+                "customer_id": "7130-VTEWQ",
+                "actual_monthly_charges": 75.75,
+                "predicted_monthly_charges": 74.96,
+                "residual": 0.79
+              },
+              {
+                "customer_id": "5453-YBTWV",
+                "actual_monthly_charges": 101.1,
+                "predicted_monthly_charges": 99.97,
+                "residual": 1.13
+              }
+            ]
+          }
+        }
+      },
+      "error": null
+    }
+  },
+  "preparing": {
+    "dataset_summary": {
+      "is_demo": true,
+      "status": "preparing",
+      "dataset_name": "IBM Telco Customer Churn",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": null,
+      "error": null
+    }
+  },
+  "failed": {
+    "dataset_summary": {
+      "is_demo": true,
+      "status": "failed",
+      "dataset_name": "IBM Telco Customer Churn",
+      "dataset_version": "demo-dataset-v1",
+      "model_version": "demo-model-v1",
+      "data": null,
+      "error": {
+        "code": "INVALID_FIELD",
+        "message": "Kolom tenure harus berisi bilangan bulat nonnegatif.",
+        "row": 4,
+        "field": "tenure"
+      }
+    }
+  }
+}

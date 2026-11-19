@@ -1,46 +1,45 @@
 import type {
-  DatasetSummaryResponse,
-  PredictionsResponse,
-  ModelInfoResponse,
-  HealthResponse,
+  DashboardSnapshot, DatasetSummaryResponse, EvaluationsResponse,
+  ModelInfoResponse, PredictionsResponse,
 } from "@/types/api";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
-export async function fetchHealth(): Promise<HealthResponse> {
-  const res = await fetch(`${API_BASE}/api/health`);
-  if (!res.ok) {
-    throw new Error(`Health check failed: ${res.status} ${res.statusText}`);
+async function readApi<T>(endpoint: string, signal?: AbortSignal): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/${endpoint}`, { signal, cache: "no-store" });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    throw new Error("Backend tidak dapat dihubungi. Periksa server dan alamat API.");
   }
-  return res.json() as Promise<HealthResponse>;
+  if (!response.ok) throw new Error(`API ${endpoint} gagal dimuat (HTTP ${response.status}).`);
+  return response.json() as Promise<T>;
 }
 
-export async function fetchDatasetSummary(): Promise<DatasetSummaryResponse> {
-  const res = await fetch(`${API_BASE}/api/dataset-summary`);
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch dataset summary: ${res.status} ${res.statusText}`
-    );
-  }
-  return res.json() as Promise<DatasetSummaryResponse>;
-}
+export type DashboardLoad =
+  | { status: "ready"; snapshot: DashboardSnapshot }
+  | { status: "preparing"; message: string }
+  | { status: "failed"; message: string };
 
-export async function fetchPredictions(): Promise<PredictionsResponse> {
-  const res = await fetch(`${API_BASE}/api/predictions`);
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch predictions: ${res.status} ${res.statusText}`
-    );
-  }
-  return res.json() as Promise<PredictionsResponse>;
-}
+export async function loadDashboard(signal?: AbortSignal): Promise<DashboardLoad> {
+  const summary = await readApi<DatasetSummaryResponse>("dataset-summary", signal);
+  if (summary.status === "failed") return { status: "failed", message: summary.error.message };
+  if (summary.status === "preparing") return { status: "preparing", message: "Backend sedang menyiapkan hasil analisis." };
 
-export async function fetchModelInfo(): Promise<ModelInfoResponse> {
-  const res = await fetch(`${API_BASE}/api/model-info`);
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch model info: ${res.status} ${res.statusText}`
-    );
+  const [predictions, modelInfo, evaluations] = await Promise.all([
+    readApi<PredictionsResponse>("predictions", signal),
+    readApi<ModelInfoResponse>("model-info", signal),
+    readApi<EvaluationsResponse>("evaluations", signal),
+  ]);
+  const responses = [predictions, modelInfo, evaluations];
+  const mismatch = responses.some(response =>
+    response.dataset_version !== summary.dataset_version || response.model_version !== summary.model_version,
+  );
+  if (mismatch || predictions.status === "preparing" || modelInfo.status === "preparing" || evaluations.status === "preparing") {
+    return { status: "preparing", message: "Versi analisis sedang berubah. Menunggu hasil yang konsisten." };
   }
-  return res.json() as Promise<ModelInfoResponse>;
+  if (predictions.status === "failed") return { status: "failed", message: predictions.error.message };
+  if (modelInfo.status === "failed") return { status: "failed", message: modelInfo.error.message };
+  return { status: "ready", snapshot: { summary, predictions, modelInfo, evaluations } };
 }

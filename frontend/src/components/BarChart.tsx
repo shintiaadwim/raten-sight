@@ -27,16 +27,18 @@ export default function BarChart({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-      <h3 className="text-sm font-semibold text-slate-700 mb-4">{title}</h3>
+      <h3 className="font-semibold text-slate-700 mb-1">{title}</h3>
+      <p className="mb-4 text-sm text-slate-500">Jumlah pelanggan</p>
+      {data.length === 0 && <p className="text-sm text-slate-600">Distribusi belum tersedia.</p>}
       <div className="flex flex-col gap-3">
         {data.map((entry) => {
           const widthPct = Math.round((entry.count / maxCount) * 100);
           return (
             <div key={entry.label} className="flex flex-col gap-1">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-600">{entry.label}</span>
+                <span className="text-sm text-slate-600">{entry.label}</span>
                 <span
-                  className={`text-xs font-semibold ${textMap[color]}`}
+                  className={`text-sm font-semibold ${textMap[color]}`}
                 >
                   {entry.count}
                 </span>

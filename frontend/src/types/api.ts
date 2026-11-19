@@ -1,52 +1,47 @@
-// ─── Distribution ───────────────────────────────────────────────────────────
+export interface ApiError {
+  code: string;
+  message: string;
+  row?: number;
+  field?: string;
+}
+
+interface ResponseMetadata {
+  is_demo: boolean;
+  dataset_version: string | null;
+  model_version: string | null;
+}
+
+export type ApiResponse<T> = ResponseMetadata & (
+  | { status: "ready"; data: T; error: null }
+  | { status: "preparing"; data: null; error: null }
+  | { status: "failed"; data: null; error: ApiError }
+);
 
 export interface DistributionEntry {
   label: string;
   count: number;
 }
 
-export interface Distributions {
-  contract: DistributionEntry[];
-  tenure: DistributionEntry[];
-  monthly_charges: DistributionEntry[];
-}
-
-// ─── Actual Churn ────────────────────────────────────────────────────────────
-
-export interface ActualChurn {
-  yes_count: number;
-  no_count: number;
-  rate: number;
-}
-
-// ─── Dataset Summary ─────────────────────────────────────────────────────────
-
 export interface DatasetSummaryData {
   processed_rows: number;
-  actual_churn: ActualChurn;
-  distributions: Distributions;
+  actual_churn: { yes_count: number; no_count: number; rate: number } | null;
+  distributions: {
+    contract: DistributionEntry[];
+    tenure: DistributionEntry[];
+    monthly_charges: DistributionEntry[];
+  };
 }
 
-export interface DatasetSummaryResponse {
-  is_demo: boolean;
-  status: "ready" | "preparing" | "failed";
-  dataset_name: string;
-  dataset_version: string;
-  model_version: string;
-  data: DatasetSummaryData;
-  error: string | null;
-}
-
-// ─── Predictions ─────────────────────────────────────────────────────────────
+export type DatasetSummaryResponse = ApiResponse<DatasetSummaryData> & { dataset_name: string };
 
 export interface Prediction {
   customer_id: string;
-  churn_probability: number;
-  churn_prediction: "Yes" | "No";
-  segment_id: number;
-  segment_name: string;
-  predicted_monthly_charges: number;
-  recommendation: string;
+  churn_probability: number | null;
+  churn_prediction: "Yes" | "No" | null;
+  segment_id: number | null;
+  segment_name: string | null;
+  predicted_monthly_charges: number | null;
+  recommendation: string | null;
 }
 
 export interface PredictionsData {
@@ -55,54 +50,81 @@ export interface PredictionsData {
   predictions: Prediction[];
 }
 
-export interface PredictionsResponse {
-  is_demo: boolean;
-  status: "ready" | "preparing" | "failed";
-  data: PredictionsData;
-}
-
-// ─── Model Info ──────────────────────────────────────────────────────────────
-
-export interface ClassificationModel {
-  algorithm: string;
-  features: string[];
-  positive_class: string;
-  threshold: number;
-}
+export type PredictionsResponse = ApiResponse<PredictionsData>;
 
 export interface ClusterSegment {
   segment_id: number;
   segment_name: string;
   customer_count: number;
-  average_tenure_months: number;
-}
-
-export interface ClusteringModel {
-  algorithm: string;
-  features: string[];
-  segments: ClusterSegment[];
-}
-
-export interface RegressionModel {
-  algorithm: string;
-  features: string[];
-  target: string;
-  unit: string;
+  average_tenure_months: number | null;
+  profile?: string | null;
+  is_noise?: boolean;
 }
 
 export interface ModelInfoData {
-  classification: ClassificationModel;
-  clustering: ClusteringModel;
-  regression: RegressionModel;
+  classification: { algorithm: string; features: string[]; positive_class: string | number | boolean; threshold: number };
+  clustering: { algorithm: string; features: string[]; segments: ClusterSegment[] };
+  regression: { algorithm: string; features: string[]; target: string; unit: string };
 }
 
-export interface ModelInfoResponse {
-  status: "ready" | "preparing" | "failed";
-  data: ModelInfoData;
+export type ModelInfoResponse = ApiResponse<ModelInfoData>;
+export type ExperimentRow = Record<string, string | number | boolean | null>;
+
+export interface EvaluationsData {
+  dataset_version: string;
+  model_version: string;
+  currency_unit: string;
+  classification: {
+    cv_candidates: ExperimentRow[];
+    test_evaluation: {
+      selected_model: string;
+      evaluation_source: string;
+      test_size: number;
+      threshold: number;
+      f1: number;
+      recall: number;
+      precision: number;
+      roc_auc: number;
+      accuracy: number;
+      confusion_matrix: { tn: number; fp: number; fn: number; tp: number };
+    };
+  };
+  clustering: {
+    candidates: ExperimentRow[];
+    elbow_curve: { k: number; inertia: number }[];
+    segment_profiles: {
+      segment_id: number;
+      segment_name: string;
+      customer_count: number;
+      tenure_mean: number;
+      monthly_charges_mean: number;
+      historical_churn_rate_pct: number;
+    }[];
+  };
+  regression: {
+    cv_candidates: ExperimentRow[];
+    test_evaluation: {
+      selected_model: string;
+      evaluation_source: string;
+      test_size: number;
+      mae_usd: number;
+      rmse_usd: number;
+      r2: number;
+      actual_vs_predicted_and_residuals_sample: {
+        customer_id: string;
+        actual_monthly_charges: number;
+        predicted_monthly_charges: number;
+        residual: number;
+      }[];
+    };
+  };
 }
 
-// ─── Health ──────────────────────────────────────────────────────────────────
+export type EvaluationsResponse = ApiResponse<EvaluationsData>;
 
-export interface HealthResponse {
-  status: string;
+export interface DashboardSnapshot {
+  summary: DatasetSummaryResponse & { status: "ready" };
+  predictions: PredictionsResponse & { status: "ready" };
+  modelInfo: ModelInfoResponse & { status: "ready" };
+  evaluations: EvaluationsResponse;
 }

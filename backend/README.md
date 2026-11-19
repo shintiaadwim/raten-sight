@@ -65,6 +65,8 @@ Backend memeriksa file sumber saat server mulai dan setiap dua detik setelah pem
 
 Buka [ringkasan dataset](http://127.0.0.1:8000/api/dataset-summary) untuk melihat status. Jika statusnya `failed`, baca `error` dan versi pada respons, lalu periksa log terminal. Perubahan pada CSV, manifest, atau artefak memicu pemeriksaan ulang. Mulai ulang server jika perbaikannya menyangkut pemasangan dependensi atau izin folder hasil. Endpoint health tetap menunjukkan apakah FastAPI merespons.
 
+Untuk menyesuaikan origin Frontend, setel `RETENSIGHT_FRONTEND_ORIGINS` sebagai daftar alamat yang dipisahkan koma sebelum menjalankan server. Nilai bawaan adalah `http://localhost:3000,http://127.0.0.1:3000`.
+
 Untuk menjalankan tes Backend, pasang dependensi pengembangan lalu jalankan pytest dari root repo.
 
 ```powershell

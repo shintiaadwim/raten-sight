@@ -1,48 +1,24 @@
-import type { PredictionsResponse } from "@/types/api";
+import type { ModelInfoData, PredictionsData } from "@/types/api";
 import PredictionTable from "@/components/PredictionTable";
+import BarChart from "@/components/BarChart";
 
-interface PredictionsSectionProps {
-  predictions: PredictionsResponse;
-}
-
-export default function PredictionsSection({
-  predictions,
-}: PredictionsSectionProps) {
-  const { data } = predictions;
-
+export default function PredictionsSection({ data, models }: { data: PredictionsData; models: ModelInfoData }) {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-800 mb-1">
-            Prediksi Churn Pelanggan
-          </h2>
-          <p className="text-sm text-slate-500">
-            Hasil prediksi model untuk setiap pelanggan dalam dataset.
-          </p>
-        </div>
-        <div className="text-right">
-          <span className="text-2xl font-bold text-indigo-600">
-            {data.processed_rows}
-          </span>
-          <p className="text-xs text-slate-400">baris diproses</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold">Prediksi & Segmen</h2>
+        <p className="mt-1 text-slate-600">
+          Hasil model untuk {data.processed_rows.toLocaleString("id-ID")} pelanggan.
+          Threshold churn {models.classification.threshold}. Estimasi memakai {models.regression.unit}.
+        </p>
       </div>
-
-      {data.warnings.length > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-sm font-semibold text-yellow-800 mb-1">
-            Peringatan
-          </p>
-          <ul className="list-disc list-inside text-sm text-yellow-700 space-y-1">
-            {data.warnings.map((w, i) => (
-              <li key={i}>{w}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <PredictionTable predictions={data.predictions} />
+      <BarChart title="Jumlah pelanggan per segmen" data={models.clustering.segments.map(segment => ({
+        label: segment.segment_name, count: segment.customer_count,
+      }))} />
+      {data.warnings.length > 0 && <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        {data.warnings.map(warning => <p key={warning}>{warning}</p>)}
+      </div>}
+      <PredictionTable predictions={data.predictions} unit={models.regression.unit} />
     </div>
   );
 }

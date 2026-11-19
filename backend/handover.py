@@ -37,7 +37,7 @@ def runtime_manifest(metadata: dict) -> dict:
             "artifact": metadata["artifacts"]["classification"],
             "algorithm": classifier["selected_model"],
             "features": classifier["required_features"],
-            "positive_class": 1,
+            "positive_class": classifier.get("model_positive_class", 1),
             "threshold": classifier["threshold"],
         },
         "clustering": {

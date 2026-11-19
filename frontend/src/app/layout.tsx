@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "RetenSight – Dashboard Analitik Churn Pelanggan",
   description:
-    "Dashboard Analitik Churn Pelanggan berbasis IBM Telco Customer Churn dataset. Didukung Logistic Regression, K-Means, dan Ridge Regression.",
+    "Eksplorasi pelanggan, prediksi churn, segmentasi, estimasi tagihan, dan evaluasi algoritma pada dataset IBM Telco.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
