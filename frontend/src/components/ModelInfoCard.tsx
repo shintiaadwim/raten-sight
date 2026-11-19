@@ -52,7 +52,7 @@ export default function ModelInfoCard({ data }: ModelInfoCardProps) {
           <div className="text-xs text-slate-500 space-y-1">
             <div>
               <span className="font-medium text-slate-600">Positive class:</span>{" "}
-              {data.classification.positive_class}
+              {String(data.classification.positive_class)} (churn)
             </div>
             <div>
               <span className="font-medium text-slate-600">Threshold:</span>{" "}

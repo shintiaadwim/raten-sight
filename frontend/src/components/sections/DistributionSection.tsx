@@ -1,14 +1,14 @@
-import type { DatasetSummaryResponse } from "@/types/api";
+import type { DatasetSummaryData } from "@/types/api";
 import BarChart from "@/components/BarChart";
 
 interface DistributionSectionProps {
-  summary: DatasetSummaryResponse;
+  data: DatasetSummaryData;
 }
 
 export default function DistributionSection({
-  summary,
+  data,
 }: DistributionSectionProps) {
-  const { distributions } = summary.data;
+  const { distributions } = data;
 
   return (
     <div className="flex flex-col gap-6">

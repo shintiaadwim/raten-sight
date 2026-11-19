@@ -1,13 +1,12 @@
-import type { DatasetSummaryResponse } from "@/types/api";
+import type { DatasetSummaryData } from "@/types/api";
 import StatCard from "@/components/StatCard";
 
 interface OverviewSectionProps {
-  summary: DatasetSummaryResponse;
+  data: DatasetSummaryData;
 }
 
-export default function OverviewSection({ summary }: OverviewSectionProps) {
-  const { data } = summary;
-  const churnRatePct = (data.actual_churn.rate * 100).toFixed(1);
+export default function OverviewSection({ data }: OverviewSectionProps) {
+  const churnRatePct = data.actual_churn ? `${(data.actual_churn.rate * 100).toFixed(1)}%` : "—";
 
   return (
     <div className="flex flex-col gap-6">
@@ -26,24 +25,25 @@ export default function OverviewSection({ summary }: OverviewSectionProps) {
           accent="default"
         />
         <StatCard
-          label="Churn Rate"
-          value={`${churnRatePct}%`}
-          subtitle="Dari total pelanggan"
+          label="Churn aktual"
+          value={churnRatePct}
+          subtitle="Dari pelanggan berlabel"
           accent="red"
         />
         <StatCard
           label="Churn (Yes)"
-          value={data.actual_churn.yes_count}
+          value={data.actual_churn?.yes_count ?? "—"}
           subtitle="Pelanggan churn"
           accent="red"
         />
         <StatCard
           label="Churn (No)"
-          value={data.actual_churn.no_count}
+          value={data.actual_churn?.no_count ?? "—"}
           subtitle="Pelanggan tidak churn"
           accent="green"
         />
       </div>
+      {!data.actual_churn && <p className="text-sm text-slate-600">Label churn aktual belum tersedia pada dataset ini.</p>}
     </div>
   );
 }

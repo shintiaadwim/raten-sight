@@ -29,12 +29,12 @@ export default function StatCard({
     <div
       className={`bg-white rounded-xl shadow-sm border border-slate-200 border-l-4 ${accentMap[accent]} p-5 flex flex-col gap-1`}
     >
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+      <p className="text-sm font-semibold text-slate-600">
         {label}
       </p>
       <p className={`text-3xl font-bold ${valueColorMap[accent]}`}>{value}</p>
       {subtitle && (
-        <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>
+        <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>
       )}
     </div>
   );

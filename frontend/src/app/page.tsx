@@ -1,236 +1,118 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type {
-  DatasetSummaryResponse,
-  PredictionsResponse,
-  ModelInfoResponse,
-} from "@/types/api";
-import {
-  fetchDatasetSummary,
-  fetchPredictions,
-  fetchModelInfo,
-} from "@/lib/api";
-import StatusBadge from "@/components/StatusBadge";
+import { useEffect, useState } from "react";
+import { loadDashboard, type DashboardLoad } from "@/lib/api";
 import OverviewSection from "@/components/sections/OverviewSection";
 import DistributionSection from "@/components/sections/DistributionSection";
 import PredictionsSection from "@/components/sections/PredictionsSection";
 import ModelSection from "@/components/sections/ModelSection";
+import EvaluationsSection from "@/components/sections/EvaluationsSection";
+import StatusBadge from "@/components/StatusBadge";
 
-type Tab = "overview" | "distribusi" | "prediksi" | "model";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "distribusi", label: "Distribusi" },
-  { id: "prediksi", label: "Prediksi" },
-  { id: "model", label: "Model Info" },
-];
-
-interface DashboardState {
-  summary: DatasetSummaryResponse | null;
-  predictions: PredictionsResponse | null;
-  modelInfo: ModelInfoResponse | null;
-  loading: boolean;
-  error: string | null;
-}
-
-function LoadingSpinner({ message }: { message?: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
-      <p className="text-slate-500 text-sm">{message ?? "Memuat data..."}</p>
-    </div>
-  );
-}
-
-function ErrorCard({ message }: { message: string }) {
-  return (
-    <div className="bg-red-50 border border-red-200 rounded-xl p-6 my-6">
-      <div className="flex items-start gap-3">
-        <span className="text-red-500 text-xl">⚠️</span>
-        <div>
-          <p className="text-red-800 font-semibold mb-1">Terjadi Kesalahan</p>
-          <p className="text-red-600 text-sm">{message}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+const tabs = [
+  ["overview", "Beranda"],
+  ["distribusi", "Eksplorasi"],
+  ["prediksi", "Prediksi & Segmen"],
+  ["evaluasi", "Evaluasi Model"],
+] as const;
+type Tab = typeof tabs[number][0];
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
-  const [state, setState] = useState<DashboardState>({
-    summary: null,
-    predictions: null,
-    modelInfo: null,
-    loading: true,
-    error: null,
-  });
+  const [tab, setTab] = useState<Tab>("overview");
+  const [result, setResult] = useState<DashboardLoad | { status: "loading" }>({ status: "loading" });
+  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
-    async function loadData() {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    async function refresh() {
+      let delay = 10000;
       try {
-        const [summary, predictions, modelInfo] = await Promise.all([
-          fetchDatasetSummary(),
-          fetchPredictions(),
-          fetchModelInfo(),
-        ]);
-        setState({
-          summary,
-          predictions,
-          modelInfo,
-          loading: false,
-          error: null,
-        });
-      } catch (err) {
-        setState((prev) => ({
-          ...prev,
-          loading: false,
-          error:
-            err instanceof Error
-              ? err.message
-              : "Gagal terhubung ke backend. Pastikan server berjalan di http://localhost:8000",
-        }));
+        const next = await loadDashboard(controller.signal);
+        if (controller.signal.aborted) return;
+        setResult(next);
+        if (next.status === "preparing") delay = 2000;
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        setResult({ status: "failed", message: error instanceof Error ? error.message : "Dashboard gagal dimuat." });
       }
+      if (!controller.signal.aborted) timer = setTimeout(refresh, delay);
     }
+    void refresh();
+    return () => { controller.abort(); clearTimeout(timer); };
+  }, [revision]);
 
-    void loadData();
-  }, []);
-
-  const { summary, predictions, modelInfo, loading, error } = state;
-  const isDemo = summary?.is_demo;
-  const status = summary?.status ?? modelInfo?.status ?? "preparing";
+  const snapshot = result.status === "ready" ? result.snapshot : null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">R</span>
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-slate-900">RetenSight</h1>
-                <p className="text-xs text-slate-400 leading-none">
-                  Dashboard Analitik Churn Pelanggan
-                </p>
-              </div>
-            </div>
-            {!loading && !error && (
-              <StatusBadge status={status} />
-            )}
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-indigo-700">RetenSight</h1>
+            <p className="mt-1 text-sm text-slate-600">Analitik pelanggan telekomunikasi</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {result.status !== "loading" && <StatusBadge status={result.status} />}
+            <button className="button-secondary" onClick={() => {
+              setResult({ status: "loading" });
+              setRevision(value => value + 1);
+            }}>Muat ulang</button>
           </div>
         </div>
       </header>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <nav aria-label="Bagian dashboard" className="mb-6 flex gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1">
+          {tabs.map(([id, label]) => (
+            <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}
+              className={`min-w-max flex-1 rounded-lg px-4 py-3 text-sm font-semibold ${tab === id ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-slate-100"}`}>
+              {label}
+            </button>
+          ))}
+        </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Loading state */}
-        {loading && <LoadingSpinner message="Memuat data dashboard..." />}
+        {result.status === "loading" && <p className="panel" role="status">Memuat dashboard…</p>}
+        {result.status === "preparing" && <p className="panel border-amber-200 bg-amber-50 text-amber-900" role="status">
+          {result.message} Tampilan akan diperbarui otomatis.
+        </p>}
+        {result.status === "failed" && <div className="panel border-red-200 bg-red-50 text-red-800" role="alert">
+          <h2 className="font-semibold">Hasil belum dapat ditampilkan</h2>
+          <p className="mt-2">{result.message}</p>
+          <p className="mt-2 text-sm">Periksa Backend, lalu gunakan Muat ulang.</p>
+        </div>}
 
-        {/* Error state */}
-        {!loading && error && <ErrorCard message={error} />}
-
-        {/* Content */}
-        {!loading && !error && summary && predictions && modelInfo && (
-          <>
-            {/* Status Banner */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mb-6">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                {isDemo && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
-                    🧪 Demo Mode
-                  </span>
-                )}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">Status:</span>
-                  <StatusBadge status={summary.status} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">Dataset:</span>
-                  <span className="text-xs font-medium text-slate-700">
-                    {summary.dataset_name}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">Versi Dataset:</span>
-                  <span className="text-xs font-mono text-slate-600">
-                    {summary.dataset_version}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">Versi Model:</span>
-                  <span className="text-xs font-mono text-slate-600">
-                    {summary.model_version}
-                  </span>
-                </div>
-              </div>
-
-              {/* Preparing state */}
-              {summary.status === "preparing" && (
-                <div className="mt-4 flex items-center gap-3 text-yellow-700">
-                  <div className="w-5 h-5 border-2 border-yellow-400 border-t-yellow-700 rounded-full animate-spin flex-shrink-0" />
-                  <span className="text-sm font-medium">Memproses data...</span>
-                </div>
-              )}
-
-              {/* Failed state */}
-              {summary.status === "failed" && summary.error && (
-                <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-red-700 mb-1">
-                    Detail Error
-                  </p>
-                  <p className="text-xs text-red-600">{summary.error}</p>
-                </div>
-              )}
+        {snapshot && <>
+          <section className="panel mb-6 space-y-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="font-semibold">{snapshot.summary.dataset_name}</h2>
+              {snapshot.summary.is_demo && <span className="rounded bg-amber-100 px-2 py-1 text-sm text-amber-800">Data demo</span>}
             </div>
-
-            {/* Tabs Navigation */}
-            <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 mb-6 shadow-sm overflow-x-auto">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 min-w-max px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === tab.id
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <details className="text-sm text-slate-600">
+              <summary className="cursor-pointer">Versi analisis</summary>
+              <p className="mt-2 break-all">Dataset {snapshot.summary.dataset_version}</p>
+              <p className="mt-1 break-all">Model {snapshot.summary.model_version}</p>
+            </details>
+          </section>
+          {tab === "overview" && <>
+            <OverviewSection data={snapshot.summary.data} />
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button className="button-primary" onClick={() => setTab("distribusi")}>Lihat eksplorasi</button>
+              <button className="button-secondary" onClick={() => setTab("prediksi")}>Lihat prediksi</button>
             </div>
-
-            {/* Tab Content */}
-            <div>
-              {activeTab === "overview" && (
-                <OverviewSection summary={summary} />
-              )}
-              {activeTab === "distribusi" && (
-                <DistributionSection summary={summary} />
-              )}
-              {activeTab === "prediksi" && (
-                <PredictionsSection predictions={predictions} />
-              )}
-              {activeTab === "model" && (
-                <ModelSection modelInfo={modelInfo} />
-              )}
-            </div>
-          </>
-        )}
+          </>}
+          {tab === "distribusi" && <DistributionSection data={snapshot.summary.data} />}
+          {tab === "prediksi" && <>
+            <PredictionsSection key={snapshot.summary.model_version + String(snapshot.summary.dataset_version)}
+              data={snapshot.predictions.data} models={snapshot.modelInfo.data} />
+            <details className="panel mt-6">
+              <summary className="cursor-pointer font-semibold">Informasi model yang digunakan</summary>
+              <div className="mt-4"><ModelSection data={snapshot.modelInfo.data} /></div>
+            </details>
+          </>}
+          {tab === "evaluasi" && <EvaluationsSection response={snapshot.evaluations} />}
+        </>}
       </main>
-
-      {/* Footer */}
-      <footer className="mt-16 border-t border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-xs text-slate-400">
-            RetenSight · IBM Telco Customer Churn Analytics Dashboard
-          </p>
-        </div>
-      </footer>
+      <footer className="mx-auto max-w-7xl px-6 py-8 text-sm text-slate-500">IBM Telco Customer Churn · Analisis dataset historis</footer>
     </div>
   );
 }

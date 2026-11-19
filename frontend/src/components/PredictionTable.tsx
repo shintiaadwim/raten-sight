@@ -1,94 +1,44 @@
+"use client";
+
+import { useState } from "react";
 import type { Prediction } from "@/types/api";
 
-interface PredictionTableProps {
-  predictions: Prediction[];
-}
-
-function ChurnBadge({ probability }: { probability: number }) {
-  const isHigh = probability > 0.5;
-  return (
-    <span
-      className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
-        isHigh
-          ? "bg-red-100 text-red-700 border border-red-200"
-          : "bg-green-100 text-green-700 border border-green-200"
-      }`}
-    >
-      {(probability * 100).toFixed(1)}%
-    </span>
-  );
-}
-
-export default function PredictionTable({ predictions }: PredictionTableProps) {
-  if (predictions.length === 0) {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center text-slate-400 text-sm">
-        Tidak ada data prediksi.
-      </div>
-    );
-  }
+export default function PredictionTable({ predictions, unit }: { predictions: Prediction[]; unit: string }) {
+  const [page, setPage] = useState(0);
+  const pageSize = 25;
+  const pageCount = Math.ceil(predictions.length / pageSize);
+  if (!predictions.length) return <p className="panel">Belum ada hasil prediksi pelanggan.</p>;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Customer ID
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Churn Prob
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Prediksi
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Segmen
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Tagihan Prediksi
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Rekomendasi
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {predictions.map((p) => (
-              <tr
-                key={p.customer_id}
-                className="hover:bg-slate-50 transition-colors"
-              >
-                <td className="px-4 py-3 font-mono text-slate-800 font-medium">
-                  {p.customer_id}
-                </td>
-                <td className="px-4 py-3">
-                  <ChurnBadge probability={p.churn_probability} />
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`font-semibold ${
-                      p.churn_prediction === "Yes"
-                        ? "text-red-600"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {p.churn_prediction}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-slate-600">{p.segment_name}</td>
-                <td className="px-4 py-3 text-slate-700 font-medium">
-                  {p.predicted_monthly_charges.toFixed(2)}
-                </td>
-                <td className="px-4 py-3 text-slate-500 max-w-xs">
-                  {p.recommendation}
-                </td>
-              </tr>
+    <section className="panel space-y-4">
+      <div className="overflow-x-auto" tabIndex={0} aria-label="Tabel prediksi pelanggan">
+        <table className="data-table w-full text-sm">
+          <caption className="sr-only">Hasil model dan simulasi rekomendasi per pelanggan</caption>
+          <thead><tr>
+            {["ID pelanggan", "Probabilitas churn", "Prediksi churn", "Segmen", `Estimasi tagihan (${unit})`, "Simulasi rekomendasi"].map(label => (
+              <th scope="col" key={label}>{label}</th>
             ))}
-          </tbody>
+          </tr></thead>
+          <tbody>{predictions.slice(page * pageSize, (page + 1) * pageSize).map(row => (
+            <tr key={row.customer_id}>
+              <td className="font-mono">{row.customer_id}</td>
+              <td>{row.churn_probability === null ? "—" : `${(row.churn_probability * 100).toFixed(1)}%`}</td>
+              <td className={row.churn_prediction === "Yes" ? "font-semibold text-red-700" : "text-slate-700"}>{row.churn_prediction ?? "—"}</td>
+              <td>{row.segment_name ?? "Belum tersedia"}</td>
+              <td>{row.predicted_monthly_charges === null ? "—" : row.predicted_monthly_charges.toFixed(2)}</td>
+              <td className="min-w-64 max-w-md">{row.recommendation ?? "Data untuk rekomendasi belum lengkap."}</td>
+            </tr>
+          ))}</tbody>
         </table>
       </div>
-    </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+        <p>{page * pageSize + 1}–{Math.min((page + 1) * pageSize, predictions.length)} dari {predictions.length} pelanggan</p>
+        <div className="flex items-center gap-3">
+          <button className="button-secondary" disabled={page === 0} onClick={() => setPage(value => value - 1)}>Sebelumnya</button>
+          <span aria-live="polite">Halaman {page + 1} / {pageCount}</span>
+          <button className="button-secondary" disabled={page + 1 >= pageCount} onClick={() => setPage(value => value + 1)}>Selanjutnya</button>
+        </div>
+      </div>
+    </section>
   );
 }
