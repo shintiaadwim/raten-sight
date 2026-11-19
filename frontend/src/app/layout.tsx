@@ -3,8 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RetenSight",
-  description: "Customer Churn & Retention Analytics",
+  title: "RetenSight – Dashboard Analitik Churn Pelanggan",
+  description:
+    "Dashboard Analitik Churn Pelanggan berbasis IBM Telco Customer Churn dataset. Didukung Logistic Regression, K-Means, dan Ridge Regression.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
