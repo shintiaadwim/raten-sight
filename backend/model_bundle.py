@@ -2,7 +2,9 @@ from dataclasses import dataclass
 from hashlib import sha256
 from importlib.metadata import PackageNotFoundError, version
 from io import BytesIO
+import json
 from pathlib import Path
+import platform
 from typing import Annotated, Any, Literal, Self
 
 import joblib
@@ -13,9 +15,11 @@ from pydantic import (
 
 from backend.dataset import AMOUNT_FIELDS, CATEGORICAL_FIELDS, FEATURE_FIELDS
 from backend.errors import ProcessingError, read_input
+from backend.handover import runtime_manifest
 
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 ArtifactName = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_.-]+\.(joblib|pkl)$")]
+EvaluationName = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_.-]+\.json$")]
 Probability = Annotated[float, Field(ge=0, le=1)]
 REQUIRED_PACKAGES = frozenset({"joblib", "numpy", "pandas", "scikit-learn"})
 
@@ -76,6 +80,9 @@ class ModelManifest(Spec):
     regression: RegressorSpec
     retention_rules: list[RetentionRule] = Field(default_factory=list)
     fallback_recommendation: Text
+    source_dataset_version: Text | None = None
+    source_dataset_sha256: Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")] | None = None
+    evaluations: EvaluationName | None = None
 
     @property
     def pipelines(self) -> dict[str, PipelineSpec]:
@@ -121,16 +128,28 @@ class LoadedPipelines:
 def read_manifest(path: Path) -> tuple[bytes, ModelManifest]:
     raw = read_input(path, "MANIFEST", "Manifest model")
     try:
-        return raw, ModelManifest.model_validate_json(raw)
+        data = json.loads(raw)
+        if isinstance(data, dict) and "models" in data:
+            data = runtime_manifest(data)
+        return raw, ModelManifest.model_validate(data)
     except ValidationError as error:
         detail = error.errors(include_url=False, include_input=False, include_context=False)[0]
         location = ".".join(map(str, detail["loc"]))
         message = f"{location}: {detail['msg']}" if location else detail["msg"]
         raise ProcessingError("INVALID_MANIFEST", f"Manifest model tidak valid. {message}") from error
+    except (ValueError, KeyError, TypeError, SyntaxError) as error:
+        raise ProcessingError("INVALID_MANIFEST", f"Metadata model tidak valid. {error}") from error
 
 
 def check_dependencies(manifest: ModelManifest) -> None:
     for package, expected in manifest.dependencies.items():
+        if package == "python":
+            installed_python = platform.python_version()
+            if installed_python.split(".")[:2] != expected.split(".")[:2]:
+                raise ProcessingError(
+                    "DEPENDENCY_MISMATCH", f"Model memakai Python {expected}, versi terpasang {installed_python}.",
+                )
+            continue
         try:
             installed = version(package)
         except PackageNotFoundError as error:

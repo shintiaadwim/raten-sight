@@ -30,9 +30,12 @@ class BatchSettings:
     def from_environment(cls) -> "BatchSettings":
         backend_dir = Path(__file__).resolve().parent
         dataset = backend_dir.parent / "data" / "raw" / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
+        metadata = backend_dir / "artifacts" / "model_metadata.json"
+        legacy_manifest = backend_dir / "artifacts" / "manifest.json"
+        default_manifest = legacy_manifest if legacy_manifest.exists() and not metadata.exists() else metadata
         return cls(
             dataset=Path(os.getenv("RETENSIGHT_DATASET_PATH", str(dataset))),
-            manifest=Path(os.getenv("RETENSIGHT_MODEL_MANIFEST", str(backend_dir / "artifacts" / "manifest.json"))),
+            manifest=Path(os.getenv("RETENSIGHT_MODEL_MANIFEST", str(default_manifest))),
             results_dir=Path(os.getenv("RETENSIGHT_RESULTS_DIR", str(backend_dir / "results"))),
         )
 
