@@ -49,6 +49,20 @@ def test_api_survives_missing_source_and_becomes_ready(batch_settings, sample_cs
     asyncio.run(scenario())
 
 
+def test_configured_frontend_origin_can_read_api(batch_settings, monkeypatch):
+    monkeypatch.setenv("RETENSIGHT_FRONTEND_ORIGINS", " http://127.0.0.1:3100, http://localhost:3100 ")
+    app = create_app(batch_settings)
+
+    async def scenario():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.get("/api/health", headers={"Origin": "http://127.0.0.1:3100"})
+            assert response.headers["access-control-allow-origin"] == "http://127.0.0.1:3100"
+            response = await client.get("/api/health", headers={"Origin": "https://example.com"})
+            assert "access-control-allow-origin" not in response.headers
+
+    asyncio.run(scenario())
+
+
 def test_concurrent_reads_see_consistent_versions_and_status(batch_settings, sample_csv, monkeypatch):
     scoring = Event()
     release = Event()
