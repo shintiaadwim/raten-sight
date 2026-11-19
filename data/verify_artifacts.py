@@ -45,7 +45,6 @@ def main():
     segs = cluster_pipe.predict(sample_df[cluster_features])
     mc_preds = reg_pipe.predict(sample_df[reg_features])
 
-    mismatches = 0
     for i, exp in enumerate(expected_samples):
         cid = str(sample_df.iloc[i]["customerID"])
         prob_v = round(float(probs[i]), 4)
@@ -53,7 +52,7 @@ def main():
         seg_id = int(segs[i])
         seg_name = segment_map.get(str(seg_id), "Unassigned / Perlu Tinjauan Manual")
         mc_pred = round(float(mc_preds[i]), 2)
-        rec = evaluate_retention_rule(prob_v, pred_lbl, seg_id)
+        rec = evaluate_retention_rule(float(probs[i]), pred_lbl, seg_id)
 
         assert cid == exp["customer_id"], f"Mismatch customerID: {cid} != {exp['customer_id']}"
         assert np.isclose(prob_v, exp["churn_probability"], atol=1e-4), f"Mismatch prob on {cid}"
