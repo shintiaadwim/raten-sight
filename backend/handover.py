@@ -58,7 +58,7 @@ def runtime_manifest(metadata: dict) -> dict:
         "fallback_recommendation": retention["missing_input_fallback"],
         "source_dataset_version": metadata["dataset_version"],
         "source_dataset_sha256": metadata.get("dataset_sha256"),
-        "evaluations": "evaluations_payload.json",
+        "evaluations": metadata.get("evaluations_file", "evaluations_payload.json"),
     }
 
 
