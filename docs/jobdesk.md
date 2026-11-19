@@ -66,7 +66,7 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 - [x] Jalankan FastAPI dari scaffold dan periksa `GET /api/health`. Catat cara menjalankan server untuk anggota tim lain. [Panduan dan hasil cek lokal](../backend/README.md#menjalankan-fastapi-dan-mengecek-health)
 - [x] Cocokkan lokasi file, skema dataset, versi paket, serta penanganan input dengan hasil ekspor Data. Verifikasi contoh per pelanggan agar Data dan Backend membaca kolom dan tipe dengan cara yang sama.
 - [x] Siapkan kontrak ringkasan, hasil per pelanggan, metadata, dan pesan error untuk Frontend. Bagikan fixture berlabel demo untuk kondisi hasil siap, sedang disiapkan, dan gagal.
-- [ ] Konfirmasi tampilan dan penggunaan respons bersama Frontend saat halaman dashboard sudah terintegrasi.
+- [x] Konfirmasi tampilan dan penggunaan respons bersama Frontend saat halaman dashboard sudah terintegrasi.
 
 [Kontrak yang diterapkan](api.md), [fixture demo](../backend/fixtures/dashboard.demo.json), serta [hasil serah terima Backend](backend-handover.md) tersedia untuk tim. Implementasi sudah diuji dengan paket sintetis dan paket terlatih dari skrip Data, termasuk 7.043 pelanggan dan 10 contoh serah terima.
 
@@ -110,53 +110,53 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 - [x] API berjalan dengan file churn dan artefak terpilih, beserta dokumentasi endpoint dan contoh respons.
 - [x] Panduan pemasangan dataset dan model, cara menjalankan server, serta cara memeriksa status pemrosesan dan versi hasil.
 - [x] Hasil uji integrasi Backend menunjukkan kecocokan ID, keberhasilan membaca ulang hasil, dan pergantian versi.
-- [ ] Selesaikan uji dashboard bersama Frontend setelah UI berhasil membaca hasil untuk satu versi dataset melalui API.
+- [x] Selesaikan uji dashboard bersama Frontend setelah UI berhasil membaca hasil untuk satu versi dataset melalui API.
 
 ## 3. Frontend
 
 ### Tugas pertama — Buat navigasi dan prototipe Beranda dengan fixture
 
-- [ ] Jalankan scaffold Next.js dari `frontend/`. Siapkan layout dengan navigasi Beranda, Eksplorasi, Prediksi & Segmen, dan Evaluasi Model.
-- [ ] Buat fixture sesuai usulan kontrak untuk kondisi hasil siap, sedang disiapkan, dan gagal. Tandai nilai contoh sebagai demo.
-- [ ] Buat Beranda yang dapat menampilkan nama dan versi dataset, jumlah pelanggan yang dianalisis, dan status kesiapan hasil. Gunakan fixture untuk menunjukkan setiap kondisi kepada tim.
+- [x] Jalankan scaffold Next.js dari `frontend/`. Siapkan layout dengan navigasi Beranda, Eksplorasi, Prediksi & Segmen, dan Evaluasi Model.
+- [x] Buat fixture sesuai usulan kontrak untuk kondisi hasil siap, sedang disiapkan, dan gagal. Tandai nilai contoh sebagai demo.
+- [x] Buat Beranda yang dapat menampilkan nama dan versi dataset, jumlah pelanggan yang dianalisis, dan status kesiapan hasil. Gunakan fixture untuk menunjukkan setiap kondisi kepada tim.
 
 ### Beranda dan Eksplorasi
 
-- [ ] Ambil ringkasan dataset ketika Beranda dibuka. Tampilkan jumlah pelanggan serta jumlah atau proporsi churn historis jika label aktual tersedia.
-- [ ] Tampilkan status pemrosesan dari Backend saat hasil belum siap. Perbarui tampilan ketika hasil untuk versi aktif tersedia melalui mekanisme yang disepakati tim.
-- [ ] Tautkan Beranda ke Eksplorasi dan Prediksi & Segmen. Saat API gagal dihubungi, tampilkan pesan dan tindakan untuk mencoba memuat kembali.
-- [ ] Buat grafik distribusi kontrak, masa berlangganan, dan tagihan berdasarkan format ringkasan yang disepakati. Tampilkan churn historis saat data aktual tersedia.
-- [ ] Sertakan judul, satuan sumbu, dan label kategori yang dapat dibaca. Pastikan jumlah atau proporsi pada grafik menggunakan data dari versi yang sama dengan ringkasan.
+- [x] Ambil ringkasan dataset ketika Beranda dibuka. Tampilkan jumlah pelanggan serta jumlah atau proporsi churn historis jika label aktual tersedia.
+- [x] Tampilkan status pemrosesan dari Backend saat hasil belum siap. Perbarui tampilan ketika hasil untuk versi aktif tersedia melalui mekanisme yang disepakati tim.
+- [x] Tautkan Beranda ke Eksplorasi dan Prediksi & Segmen. Saat API gagal dihubungi, tampilkan pesan dan tindakan untuk mencoba memuat kembali.
+- [x] Buat grafik distribusi kontrak, masa berlangganan, dan tagihan berdasarkan format ringkasan yang disepakati. Tampilkan churn historis saat data aktual tersedia.
+- [x] Sertakan judul, satuan sumbu, dan label kategori yang dapat dibaca. Pastikan jumlah atau proporsi pada grafik menggunakan data dari versi yang sama dengan ringkasan.
 
 ### Prediksi & Segmen
 
-- [ ] Buat tabel hasil dengan ID pelanggan, probabilitas dan label prediksi churn, nama segmen, estimasi tagihan, dan simulasi rekomendasi.
-- [ ] Format probabilitas dari skala 0–1 menjadi persentase. Gunakan label yang jelas untuk churn aktual dan prediksi jika keduanya tampil. Pakai satuan biaya yang disepakati untuk tagihan.
-- [ ] Jika profil atau distribusi segmen disediakan, tampilkan nama, ukuran, dan karakteristik segmen. Gunakan istilah yang konsisten dengan metadata Data.
-- [ ] Tangani hasil kosong atau nilai yang belum tersedia dengan penjelasan dari API jika ada. Pastikan nilai nol tetap tampil sebagai nilai yang valid.
-- [ ] Periksa tabel saat banyak baris atau saat rekomendasi panjang. Pastikan judul kolom dan ID pelanggan tetap mudah dibaca pada layar kecil.
+- [x] Buat tabel hasil dengan ID pelanggan, probabilitas dan label prediksi churn, nama segmen, estimasi tagihan, dan simulasi rekomendasi.
+- [x] Format probabilitas dari skala 0–1 menjadi persentase. Gunakan label yang jelas untuk churn aktual dan prediksi jika keduanya tampil. Pakai satuan biaya yang disepakati untuk tagihan.
+- [x] Jika profil atau distribusi segmen disediakan, tampilkan nama, ukuran, dan karakteristik segmen. Gunakan istilah yang konsisten dengan metadata Data.
+- [x] Tangani hasil kosong atau nilai yang belum tersedia dengan penjelasan dari API jika ada. Pastikan nilai nol tetap tampil sebagai nilai yang valid.
+- [x] Periksa tabel saat banyak baris atau saat rekomendasi panjang. Pastikan judul kolom dan ID pelanggan tetap mudah dibaca pada layar kecil.
 
 ### Evaluasi Model
 
-- [ ] Buat tampilan perbandingan terpisah untuk klasifikasi, clustering, dan regresi. Tampilkan versi model serta sumber data evaluasi.
-- [ ] Untuk klasifikasi, tampilkan metrik dan confusion matrix. Tunjukkan threshold model terpilih jika ada di metadata.
-- [ ] Untuk clustering, tampilkan metrik internal, jumlah dan profil segmen, serta cakupan atau noise jika dilaporkan.
-- [ ] Untuk regresi, tampilkan MAE, RMSE, dan R², beserta grafik aktual versus prediksi dan residual yang disediakan Data.
-- [ ] Beri label yang jelas pada skor cross-validation dan skor data uji. Gunakan hasil eksperimen dari API untuk mengisi halaman evaluasi.
+- [x] Buat tampilan perbandingan terpisah untuk klasifikasi, clustering, dan regresi. Tampilkan versi model serta sumber data evaluasi.
+- [x] Untuk klasifikasi, tampilkan metrik dan confusion matrix. Tunjukkan threshold model terpilih jika ada di metadata.
+- [x] Untuk clustering, tampilkan metrik internal, jumlah dan profil segmen, serta cakupan atau noise jika dilaporkan.
+- [x] Untuk regresi, tampilkan MAE, RMSE, dan R², beserta grafik aktual versus prediksi dan residual yang disediakan Data.
+- [x] Beri label yang jelas pada skor cross-validation dan skor data uji. Gunakan hasil eksperimen dari API untuk mengisi halaman evaluasi.
 
 ### Integrasi dan pengujian Frontend
 
-- [ ] Hubungkan UI ke endpoint ringkasan, hasil pelanggan, metadata, dan evaluasi. Tempatkan alamat API pada konfigurasi yang dapat disesuaikan saat menjalankan aplikasi.
-- [ ] Periksa kecocokan versi dataset dan model saat berpindah halaman atau saat Backend memproses versi baru.
-- [ ] Uji kondisi loading, hasil siap, data kosong, hasil sedang diproses, error dari API, dan API tidak dapat dihubungi.
-- [ ] Uji navigasi pada layar desktop dan ponsel. Periksa penggunaan keyboard, label komponen, keterbacaan grafik, dan kejelasan pesan status.
-- [ ] Jalankan pemeriksaan TypeScript dan build produksi. Gunakan file di server untuk uji akhir, lalu cocokkan contoh hasil dashboard dengan respons API.
+- [x] Hubungkan UI ke endpoint ringkasan, hasil pelanggan, metadata, dan evaluasi. Tempatkan alamat API pada konfigurasi yang dapat disesuaikan saat menjalankan aplikasi.
+- [x] Periksa kecocokan versi dataset dan model saat berpindah halaman atau saat Backend memproses versi baru.
+- [x] Uji kondisi loading, hasil siap, data kosong, hasil sedang diproses, error dari API, dan API tidak dapat dihubungi.
+- [x] Uji navigasi pada layar desktop dan ponsel. Periksa penggunaan keyboard, label komponen, keterbacaan grafik, dan kejelasan pesan status.
+- [x] Jalankan pemeriksaan TypeScript dan build produksi. Gunakan file di server untuk uji akhir, lalu cocokkan contoh hasil dashboard dengan respons API.
 
 ### Hasil serah terima Frontend
 
-- [ ] Empat halaman responsif dengan navigasi, ringkasan, grafik, tabel hasil, dan tampilan status.
-- [ ] Fixture demo untuk pengembangan mandiri serta integrasi dengan hasil nyata dari Backend.
-- [ ] Panduan menjalankan UI, mengatur alamat API, dan mendemokan satu analisis dari Beranda hingga Evaluasi Model.
+- [x] Empat halaman responsif dengan navigasi, ringkasan, grafik, tabel hasil, dan tampilan status.
+- [x] Fixture demo untuk pengembangan mandiri serta integrasi dengan hasil nyata dari Backend.
+- [x] Panduan menjalankan UI, mengatur alamat API, dan mendemokan satu analisis dari Beranda hingga Evaluasi Model.
 
 ## Checklist integrasi bersama
 
@@ -164,3 +164,9 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 2. **Integrasi demo.** Backend menyediakan fixture atau respons demo yang disepakati. Frontend mendemokan kondisi siap, sedang diproses, dan gagal. Data mengonfirmasi bahwa istilah, label, dan satuan biaya sesuai dataset.
 3. **Integrasi model.** Pasang file dan artefak berversi. Jalankan pemrosesan otomatis, cocokkan contoh baris antara Data, API, dan dashboard, lalu pastikan evaluasi menggunakan hasil eksperimen yang sesuai.
 4. **Pemeriksaan akhir.** Buka dashboard berulang kali dengan versi yang sama, ganti salah satu versi, lalu periksa bahwa hasil yang ditampilkan mengikuti versi aktif dan status prosesnya. Catat hasil uji dan bagian yang masih perlu dituntaskan sebelum demo.
+
+## Verifikasi penutupan backlog
+
+Pada 19 November 2026, pipeline Data dijalankan ulang dan 10 contoh hasil cocok dengan Backend. Sebanyak 54 tes Backend dan 8 tes Frontend lulus. Dashboard diuji di browser pada viewport desktop 1280×900 dan ponsel 390×844, termasuk navigasi keyboard, pagination, evaluasi, status proses, error terstruktur, kegagalan API, hasil kosong, serta respons yang berbeda versi. Kondisi hasil siap memakai file proyek berisi 7.043 pelanggan. Kondisi proses, gagal, kosong, dan pergantian versi memakai fixture melalui proxy uji lokal.
+
+Frontend memakai Next.js 16.4.6 dan Webpack. Build produksi berhasil dan audit dependensi melaporkan nol kerentanan. Panduan penggunaan tersedia di README tiap role.

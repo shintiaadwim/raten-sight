@@ -49,6 +49,8 @@ Buat satu tabel per tugas dengan kolom kandidat, konfigurasi, metrik, dan catata
 
 Pasang Jupyter sesuai kebutuhan untuk menjalankan notebook. Folder data mentah dan hasil eksperimen diabaikan Git.
 
+Metrik internal klaster dan penjelasan kesalahan regresi pada metadata dihitung dari model yang baru dilatih. Metadata klasifikasi mencatat kelas angka model melalui `model_positive_class`, sedangkan `positive_class` menyatakan makna churn sebagai `Yes`. Contoh rekomendasi memakai probabilitas sebelum pembulatan agar cocok dengan inference Backend.
+
 ## Hasil serah terima
 
 - File churn berversi untuk dipasang Backend, kamus data, notebook EDA, serta skrip cleaning, training, dan evaluasi yang dapat dijalankan ulang.

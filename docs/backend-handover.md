@@ -65,4 +65,4 @@ Angka ini berasal dari satu pemeriksaan lokal. Jalankan ulang verifikasi pada pe
 .\.venv\Scripts\python.exe -m pytest backend/tests -q
 ```
 
-Integrasi tampilan dashboard diperiksa bersama Frontend setelah halaman UI tersedia.
+Integrasi dashboard sudah diperiksa pada 19 November 2026. Beranda, Eksplorasi, Prediksi & Segmen, serta Evaluasi Model membaca API yang sama. Uji browser mencakup pagination, keyboard, viewport desktop dan ponsel, status preparing/failed, data kosong, serta penahanan hasil dengan versi berbeda. Kondisi kegagalan dan perubahan versi diuji menggunakan fixture lokal.
