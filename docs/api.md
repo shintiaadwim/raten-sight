@@ -8,13 +8,13 @@ RetenSight menggunakan satu file churn pelanggan yang dipasang di server. Backen
 | `GET /api/dataset-summary` | Menyediakan status pemrosesan, identitas dataset, dan ringkasan eksplorasi | Tersedia |
 | `GET /api/predictions` | Menyediakan hasil analisis tersimpan per pelanggan | Tersedia |
 | `GET /api/model-info` | Menampilkan versi model, fitur, threshold, dan profil segmen | Tersedia |
-| `GET /api/evaluations` | Menampilkan hasil evaluasi eksperimen yang tersimpan | Usulan |
+| `GET /api/evaluations` | Menampilkan hasil evaluasi eksperimen yang tersimpan | Tersedia |
 
 ## Frontend dan Backend
 
 Ringkasan memuat nama dataset, versi dataset dan model, status pemrosesan, jumlah pelanggan, serta distribusi yang disepakati untuk grafik. Jika kolom `Churn` tersedia, gunakan label historis untuk ringkasan churn aktual. Versi dataset dan model pada respons membantu Frontend mencocokkan ringkasan dengan hasil per pelanggan.
 
-Respons untuk ringkasan, prediksi pelanggan, dan metadata model memakai struktur yang sama dengan fixture demo.
+Respons untuk ringkasan, prediksi pelanggan, metadata model, dan evaluasi memakai struktur yang sama dengan fixture demo.
 
 | Field | Isi usulan |
 | --- | --- |
@@ -24,9 +24,9 @@ Respons untuk ringkasan, prediksi pelanggan, dan metadata model memakai struktur
 | `data` | Objek ringkasan, hasil per pelanggan, atau metadata model sesuai endpoint saat `ready`. Gunakan `null` saat hasil belum tersedia |
 | `error` | Objek dengan `code` dan `message` saat `failed`. Dapat memuat `row` dan `field` untuk masalah CSV, atau `model_release` jika manifest terbaca tetapi fingerprint paket belum bisa dihitung. Bernilai `null` untuk kondisi lain |
 
-Gunakan `GET /api/dataset-summary` untuk memeriksa kesiapan hasil. HTTP 200 pada ketiga endpoint baca berarti status batch bisa dibaca. Saat `preparing` atau `failed`, `data` bernilai `null`. Ringkasan menyertakan `dataset_name` pada semua status. Saat `ready`, objek `data` memuat `processed_rows`, churn historis (`actual_churn`), serta distribusi untuk grafik kontrak, tenure, dan tagihan. `actual_churn.rate` berada di skala 0–1 dan dihitung dari jumlah label `Yes` dibagi jumlah label aktual `Yes` dan `No`. Gunakan `null` untuk `actual_churn` jika label historis tidak tersedia.
+Gunakan `GET /api/dataset-summary` untuk memeriksa kesiapan hasil. HTTP 200 pada keempat endpoint baca berarti status batch bisa dibaca. Saat `preparing` atau `failed`, `data` bernilai `null`. Ringkasan menyertakan `dataset_name` pada semua status. Saat `ready`, objek `data` memuat `processed_rows`, churn historis (`actual_churn`), serta distribusi untuk grafik kontrak, tenure, dan tagihan. `actual_churn.rate` berada di skala 0–1 dan dihitung dari jumlah label `Yes` dibagi jumlah label aktual `Yes` dan `No`. Gunakan `null` untuk `actual_churn` jika label historis tidak tersedia.
 
-Frontend menggabungkan respons jika `dataset_version` dan `model_version` cocok. Versi dapat berubah di antara dua request saat batch baru dimulai. Ketiga endpoint menyediakan header `Cache-Control: no-store` agar browser membaca status terkini. API mengizinkan origin lokal `http://localhost:3000` dan `http://127.0.0.1:3000`.
+Frontend menggabungkan respons jika `dataset_version` dan `model_version` cocok. Versi dapat berubah di antara dua request saat batch baru dimulai. Keempat endpoint menyediakan header `Cache-Control: no-store` agar browser membaca status terkini. API mengizinkan origin lokal `http://localhost:3000` dan `http://127.0.0.1:3000`.
 
 | Field per pelanggan | Tipe usulan |
 | --- | --- |
@@ -52,14 +52,30 @@ Ambil objek berikut dari [`backend/fixtures/dashboard.demo.json`](../backend/fix
 | Sedang diproses | `GET /api/dataset-summary` | `preparing.dataset_summary` |
 | Gagal diproses | `GET /api/dataset-summary` | `failed.dataset_summary` |
 
-Frontend dapat memakai ringkasan untuk menentukan tampilan status, lalu membaca prediksi dan metadata dari pasangan versi yang sama saat hasil siap. File fixture berisi nilai sintetis dan parameter model demo. Payload evaluasi akan menggunakan hasil eksperimen dari Data.
+Frontend dapat memakai ringkasan untuk menentukan tampilan status, lalu membaca prediksi dan metadata dari pasangan versi yang sama saat hasil siap. File fixture berisi nilai sintetis dan parameter model demo.
+
+### Evaluasi model
+
+`GET /api/evaluations` menyediakan isi `evaluations_payload.json` dari paket Data pada field `data` saat batch siap. Struktur yang dipakai halaman Evaluasi adalah sebagai berikut.
+
+| Field pada `data` | Isi |
+| --- | --- |
+| `classification.cv_candidates` | Tabel perbandingan CV klasifikasi beserta parameter dan catatan |
+| `classification.test_evaluation` | Skor data uji, confusion matrix, threshold, sumber evaluasi, dan kurva threshold dari validasi |
+| `clustering.candidates`, `elbow_curve`, `segment_profiles` | Perbandingan clustering, inertia per k, dan profil segmen dari Data |
+| `regression.cv_candidates` | Tabel perbandingan CV regresi |
+| `regression.test_evaluation` | MAE, RMSE, R², sumber evaluasi, serta sampel aktual, prediksi, dan residual |
+
+Envelope memakai versi isi CSV aktif dan fingerprint paket model. Field versi di dalam `data` mempertahankan nama rilis sumber dari Data, misalnya `telco-churn-v1.0`. Backend memeriksa bahwa versi rilis evaluasi cocok dengan metadata model. Berkas evaluasi ikut diperiksa perubahannya dan disertakan dalam fingerprint agar hasil tersimpan tidak memakai evaluasi rilis lain.
+
+Untuk paket lama yang belum menyertakan evaluasi, endpoint evaluasi memberi status `failed` dengan kode `EVALUATIONS_NOT_AVAILABLE`. Paket Data menyertakan file evaluasi sebagai bagian dari serah terima.
 
 ## Data dan Backend
 
 ### Lokasi dan versi
 
 - Gunakan `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` sebagai usulan lokasi file lokal dari root repo. Backend membaca file yang sudah ditempatkan tim di komputer yang menjalankan FastAPI.
-- `dataset_version` berupa `sha256:<hash>` dari isi CSV yang diproses. Nilai ini bisa dicocokkan dengan hash file pada serah terima Data. Letakkan paket model dan `manifest.json` di `backend/artifacts/`.
+- `dataset_version` berupa `sha256:<hash>` dari isi CSV yang diproses. Nilai ini bisa dicocokkan dengan hash file pada serah terima Data. Letakkan paket model dan `model_metadata.json` hasil ekspor Data di `backend/artifacts/`.
 - Data memberi nama rilis pada `model_version` di manifest. Backend menambahkan fingerprint isi manifest dan ketiga artefak untuk mendapatkan versi yang disajikan, misalnya `model-v1@sha256:<hash>`.
 - Gunakan kedua versi saat menyimpan dan menyajikan hasil. Perubahan pada salah satu versi memicu pemrosesan ulang file sesuai desain aplikasi.
 - Tim Data menyerahkan file berversi, pipeline lengkap dengan preprocessing, daftar fitur dan tipe input, versi dependensi, threshold churn, profil dan pemetaan ID segmen, aturan retensi, hasil evaluasi, serta contoh hasil per pelanggan. Training dilakukan offline.
@@ -99,7 +115,11 @@ Skenario fixture `ready` memakai dua baris pertama setelah header sebagai contoh
 
 ### Paket model dari Data
 
-Manifest menyimpan petunjuk untuk menjalankan tiga pipeline yang sudah dilatih. Contoh berikut menunjukkan format serah terima. Ganti nama artefak, versi, fitur, kelas positif, threshold, segmen, dan aturan sesuai hasil eksperimen.
+Backend menerima `model_metadata.json` yang dibuat `data/run_pipeline.py`. Adapter mengambil fitur, threshold, pemetaan segmen, satuan biaya, dan aturan retensi dari metadata. Kode training Data memetakan `Churn == "Yes"` menjadi kelas angka `1`. Backend memakai kelas angka tersebut untuk membaca probabilitas, lalu menghasilkan label tampilan `Yes` atau `No`.
+
+Aturan retensi di metadata diterjemahkan menjadi kondisi terstruktur, termasuk kondisi AND dan OR, lalu dijalankan menurut prioritas. Kondisi yang formatnya belum didukung menghasilkan `INVALID_MANIFEST` agar paket dapat diperbaiki sebelum dipakai.
+
+Format `manifest.json` awal tetap didukung. Contoh berikut menunjukkan kontrak runtime untuk paket dengan format tersebut. Ganti nama artefak, versi, fitur, kelas positif, threshold, segmen, dan aturan sesuai hasil eksperimen. Tambahkan `evaluations` dengan nama file evaluasi jika tersedia.
 
 ```json
 {

@@ -49,6 +49,10 @@ def create_app(settings: BatchSettings | None = None) -> FastAPI:
     async def model_info():
         return serve("model_info")
 
+    @app.get("/api/evaluations")
+    async def evaluations():
+        return serve("evaluations")
+
     return app
 
 

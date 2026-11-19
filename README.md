@@ -18,7 +18,7 @@ Scaffold dashboard analitik untuk file churn pelanggan telekomunikasi yang disia
 | Folder | Stack | Isi awal |
 | --- | --- | --- |
 | `frontend/` | Next.js, TypeScript, Tailwind CSS | Halaman awal dan konfigurasi build |
-| `backend/` | Python, FastAPI, Uvicorn | Endpoint `GET /api/health` |
+| `backend/` | Python, FastAPI, Uvicorn | Pemrosesan dataset, hasil tersimpan, dan lima endpoint dashboard |
 | `data/` | Python, pandas, NumPy, scikit-learn, joblib | Dependensi dan panduan kerja Data |
 | `docs/` | Markdown | Usulan kontrak integrasi |
 
@@ -66,5 +66,7 @@ Gunakan branch per fitur dan PR. Sepakati [kontrak API dan artefak](docs/api.md)
 | Data | Verifikasi file churn, buat EDA dan kamus data, lalu bangun baseline klasifikasi, clustering, dan regresi. | Dataset berversi, pipeline, versi dependensi, profil segmen, aturan retensi, dan metrik eksperimen. [Panduan Data](data/README.md) |
 
 Target integrasi pertama adalah dashboard yang membaca ringkasan dan hasil model dari satu versi dataset yang dipasang di server. Periksa kecocokan hasil dengan `customerID`, waktu pemrosesan batch, dan waktu respons dashboard saat membaca hasil tersimpan.
+
+Backend sudah diverifikasi dengan paket model dari skrip Data. Cara memasang artefak dan menjalankan verifikasi tersedia di [panduan Backend](backend/README.md), dengan hasil pemeriksaan pada [catatan serah terima](docs/backend-handover.md).
 
 Untuk lingkup awal, gunakan satu dataset publik, training offline, dan rekomendasi retensi berbasis aturan sebagai simulasi pada dataset historis. Akun, integrasi billing atau CRM, dan kampanye otomatis berada di luar lingkup awal.

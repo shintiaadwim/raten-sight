@@ -10,12 +10,13 @@ from typing import Literal
 
 from backend.dataset import dataset_version, read_dataset
 from backend.errors import ProcessingError, read_input
+from backend.evaluations import read_evaluations
 from backend.inference import analyze
 from backend.model_bundle import artifact_paths, bundle_version, check_dependencies, load_pipelines, read_manifest
 
 logger = logging.getLogger(__name__)
 DATASET_NAME = "IBM Telco Customer Churn"
-CACHE_FORMAT_VERSION = 1
+CACHE_FORMAT_VERSION = 2
 RESULT_KEYS = ("dataset_summary", "predictions", "model_info")
 
 
@@ -30,9 +31,12 @@ class BatchSettings:
     def from_environment(cls) -> "BatchSettings":
         backend_dir = Path(__file__).resolve().parent
         dataset = backend_dir.parent / "data" / "raw" / "WA_Fn-UseC_-Telco-Customer-Churn.csv"
+        metadata = backend_dir / "artifacts" / "model_metadata.json"
+        legacy_manifest = backend_dir / "artifacts" / "manifest.json"
+        default_manifest = legacy_manifest if legacy_manifest.exists() and not metadata.exists() else metadata
         return cls(
             dataset=Path(os.getenv("RETENSIGHT_DATASET_PATH", str(dataset))),
-            manifest=Path(os.getenv("RETENSIGHT_MODEL_MANIFEST", str(backend_dir / "artifacts" / "manifest.json"))),
+            manifest=Path(os.getenv("RETENSIGHT_MODEL_MANIFEST", str(default_manifest))),
             results_dir=Path(os.getenv("RETENSIGHT_RESULTS_DIR", str(backend_dir / "results"))),
         )
 
@@ -42,7 +46,7 @@ class BatchState:
     status: Literal["preparing", "ready", "failed"]
     dataset_version: str | None = None
     model_version: str | None = None
-    result: dict[str, dict] | None = None
+    result: dict[str, dict | None] | None = None
     error: dict | None = None
 
     def response(self, section: str) -> dict:
@@ -56,6 +60,12 @@ class BatchState:
         }
         if section == "dataset_summary":
             body["dataset_name"] = DATASET_NAME
+        if section == "evaluations" and self.status == "ready" and body["data"] is None:
+            body["status"] = "failed"
+            body["error"] = {
+                "code": "EVALUATIONS_NOT_AVAILABLE",
+                "message": "Paket model belum menyertakan hasil evaluasi.",
+            }
         return body
 
 
@@ -89,6 +99,8 @@ class BatchProcessor:
             manifest_raw, manifest = read_manifest(self.settings.manifest)
             model_release = manifest.model_version
             paths = artifact_paths(self.settings.manifest, manifest)
+            if manifest.evaluations:
+                paths["evaluations"] = self.settings.manifest.with_name(manifest.evaluations)
             self._watched += tuple(paths.values())
             self._observed += tuple(file_stamp(path) for path in paths.values())
             files = {kind: read_input(path, "ARTIFACT", "Artefak model") for kind, path in paths.items()}
@@ -98,6 +110,9 @@ class BatchProcessor:
                 return
 
             check_dependencies(manifest)
+            if manifest.source_dataset_sha256 and data_version != f"sha256:{manifest.source_dataset_sha256}":
+                raise ProcessingError("DATASET_MISMATCH", "Isi CSV berbeda dari sumber dataset paket model.")
+            evaluations = read_evaluations(files["evaluations"], manifest) if manifest.evaluations else None
             cache_key = sha256(f"{data_version}\n{model_version}".encode()).hexdigest()
             target = self.settings.results_dir / f"{cache_key}.json"
             result = read_cached_result(target, data_version, model_version)
@@ -108,6 +123,7 @@ class BatchProcessor:
                     categories=manifest.categories,
                 )
                 result = analyze(rows, manifest, load_pipelines(manifest, files))
+                result["evaluations"] = evaluations
                 if not self._inputs_are_current():
                     return
                 save_result(target, data_version, model_version, result)
@@ -142,7 +158,7 @@ def file_stamp(path: Path) -> tuple[int, int, int, int] | int | None:
     return info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
 
 
-def read_cached_result(path: Path, data_version: str, model_version: str) -> dict[str, dict] | None:
+def read_cached_result(path: Path, data_version: str, model_version: str) -> dict[str, dict | None] | None:
     try:
         record = json.loads(path.read_text(encoding="utf-8"))
     except (FileNotFoundError, ValueError):
@@ -156,10 +172,12 @@ def read_cached_result(path: Path, data_version: str, model_version: str) -> dic
     result = record.get("result")
     if not isinstance(result, dict) or any(not isinstance(result.get(key), dict) for key in RESULT_KEYS):
         return None
+    if "evaluations" not in result or (result["evaluations"] is not None and not isinstance(result["evaluations"], dict)):
+        return None
     return result
 
 
-def save_result(path: Path, data_version: str, model_version: str, result: dict[str, dict]) -> None:
+def save_result(path: Path, data_version: str, model_version: str, result: dict[str, dict | None]) -> None:
     temp_path = None
     try:
         path.parent.mkdir(parents=True, exist_ok=True)

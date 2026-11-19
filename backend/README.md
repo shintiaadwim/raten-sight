@@ -1,6 +1,6 @@
 # Backend
 
-Layanan FastAPI memvalidasi file churn, menjalankan tiga pipeline dari Data, dan menyediakan ringkasan, prediksi per pelanggan, serta metadata model melalui API.
+Layanan FastAPI memvalidasi file churn, menjalankan tiga pipeline dari Data, dan menyediakan ringkasan, prediksi per pelanggan, metadata model, serta hasil eksperimen melalui API.
 
 ## Menjalankan FastAPI dan mengecek health
 
@@ -31,10 +31,35 @@ Layanan FastAPI memvalidasi file churn, menjalankan tiga pipeline dari Data, dan
 | Isi | Lokasi bawaan dari root repo | Variabel untuk mengganti lokasi |
 | --- | --- | --- |
 | CSV churn | `data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv` | `RETENSIGHT_DATASET_PATH` |
-| Manifest model | `backend/artifacts/manifest.json` | `RETENSIGHT_MODEL_MANIFEST` |
+| Metadata model dari Data | `backend/artifacts/model_metadata.json` | `RETENSIGHT_MODEL_MANIFEST` |
 | Hasil analisis | `backend/results/` | `RETENSIGHT_RESULTS_DIR` |
 
-Letakkan ketiga artefak pipeline di folder yang sama dengan manifest. Tim Data dapat menggunakan [contoh paket model](../docs/api.md#paket-model-dari-data) untuk menyiapkan file dan metadata sesuai hasil training. Dependensi Backend memakai daftar versi yang sama dengan folder Data.
+Paket Data berisi `churn_classifier.joblib`, `customer_clustering.joblib`, `monthly_charges_regressor.joblib`, `model_metadata.json`, dan `evaluations_payload.json`. Backend langsung membaca metadata hasil ekspor Data. Format `manifest.json` sebelumnya tetap dapat dipilih lewat variabel konfigurasi. Saat startup, Backend juga memakai file tersebut jika metadata Data belum tersedia.
+
+### Membuat artefak di komputer sendiri
+
+Letakkan CSV acuan di `data/raw/`, lalu jalankan skrip Data secara offline dari root repo. Jika baru melakukan clone, salinan CSV proyek tersedia di folder `data/`. Buat folder `data/raw/` dan salin file tersebut ke lokasi acuan.
+
+```powershell
+New-Item -ItemType Directory -Force data/raw
+Copy-Item data/WA_Fn-UseC_-Telco-Customer-Churn.csv data/raw/
+.\.venv\Scripts\python.exe data/run_pipeline.py
+.\.venv\Scripts\python.exe data/verify_artifacts.py
+```
+
+Skrip Data melatih model dan memasang hasilnya ke `backend/artifacts/`. Dependensi Backend memakai daftar versi yang sama dengan folder Data. Jalankan training sebelum menyalakan API.
+
+### Memasang folder yang dikirim tim Data
+
+Jika menerima seluruh `data/outputs/`, letakkan folder tersebut di lokasi lokal dan pasang dengan perintah berikut. Ganti argumen terakhir jika folder kiriman berada di tempat lain.
+
+```powershell
+.\.venv\Scripts\python.exe -m backend.install_artifacts data/outputs
+```
+
+Perintah ini juga menerima folder yang langsung berisi metadata, tiga model, dan evaluasi. Installer memeriksa dependensi, fitur, serta versi evaluasi sebelum mengganti metadata aktif. Artefak dipasang memakai nama berisi hash, lalu metadata dipublikasikan setelah semua file siap.
+
+Folder CSV mentah, model, keluaran eksperimen, dan hasil batch diabaikan Git. Anggota lain dapat memasang folder kiriman Data atau menjalankan training ulang dengan versi dependensi dan seed yang sesuai. Perintah verifikasi memeriksa kecocokan keluaran pada toleransi pembulatan yang dicatat.
 
 Backend memeriksa file sumber saat server mulai dan setiap dua detik setelah pemeriksaan terakhir selesai. Pasangan versi yang sudah memiliki hasil valid dibaca kembali dari JSON lokal. Jika versi berubah, hasil pasangan baru disimpan sebelum API beralih ke `ready`.
 
@@ -46,6 +71,18 @@ Untuk menjalankan tes Backend, pasang dependensi pengembangan lalu jalankan pyte
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest backend/tests -q
 ```
+
+## Memverifikasi serah terima
+
+Sesudah artefak terpasang, jalankan perintah berikut dari root repo.
+
+```powershell
+.\.venv\Scripts\python.exe -m backend.verify_handover --samples data/outputs/sample_predictions.json
+```
+
+Perintah memproses dataset dengan folder hasil sementara, mencocokkan contoh berdasarkan `customerID`, lalu memeriksa pembacaan ulang hasil. Laporan memuat jumlah baris, jumlah sampel cocok, waktu batch, dan waktu pembacaan cache. Jika hanya menerima `backend/artifacts/`, jalankan tanpa `--samples` untuk memakai satu contoh yang disertakan dalam metadata Data.
+
+Gunakan [hasil verifikasi dan panduan Frontend](../docs/backend-handover.md) untuk mencoba endpoint dan memahami bentuk respons.
 
 ## Tugas pertama
 

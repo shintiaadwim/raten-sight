@@ -64,10 +64,11 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 ### Tugas pertama — Baca file di server dan siapkan contoh respons
 
 - [x] Jalankan FastAPI dari scaffold dan periksa `GET /api/health`. Catat cara menjalankan server untuk anggota tim lain. [Panduan dan hasil cek lokal](../backend/README.md#menjalankan-fastapi-dan-mengecek-health)
-- [ ] Sepakati lokasi file di server, skema dataset, versi file dan model, serta perlakuan untuk baris yang tidak memenuhi skema. Gunakan contoh dari Data untuk memastikan kedua role membaca kolom dan tipe dengan cara yang sama.
-- [ ] Sepakati bentuk ringkasan, hasil per pelanggan, metadata, dan pesan error dengan Frontend. Bagikan fixture berlabel demo untuk kondisi hasil siap, sedang disiapkan, dan gagal.
+- [x] Cocokkan lokasi file, skema dataset, versi paket, serta penanganan input dengan hasil ekspor Data. Verifikasi contoh per pelanggan agar Data dan Backend membaca kolom dan tipe dengan cara yang sama.
+- [x] Siapkan kontrak ringkasan, hasil per pelanggan, metadata, dan pesan error untuk Frontend. Bagikan fixture berlabel demo untuk kondisi hasil siap, sedang disiapkan, dan gagal.
+- [ ] Konfirmasi tampilan dan penggunaan respons bersama Frontend saat halaman dashboard sudah terintegrasi.
 
-[Kontrak yang diterapkan](api.md) dan [fixture demo](../backend/fixtures/dashboard.demo.json) tersedia untuk ditinjau bersama Data dan Frontend. Implementasi di bawah diuji menggunakan paket model sintetis. Verifikasi dengan pipeline terlatih dilakukan saat Data menyerahkan paketnya.
+[Kontrak yang diterapkan](api.md), [fixture demo](../backend/fixtures/dashboard.demo.json), serta [hasil serah terima Backend](backend-handover.md) tersedia untuk tim. Implementasi sudah diuji dengan paket sintetis dan paket terlatih dari skrip Data, termasuk 7.043 pelanggan dan 10 contoh serah terima.
 
 ### Validasi dataset dan artefak
 
@@ -98,17 +99,18 @@ Gunakan checklist ini untuk membagi pekerjaan dan memeriksa hasil serah terima. 
 - [x] Sediakan `GET /api/dataset-summary` untuk identitas dataset, status, jumlah baris, dan distribusi yang dipakai grafik.
 - [x] Sediakan `GET /api/predictions` untuk hasil tersimpan, termasuk ID pelanggan, probabilitas dan label churn, segmen, estimasi tagihan, simulasi rekomendasi, dan metadata versi.
 - [x] Sediakan `GET /api/model-info` untuk metadata model. Cocokkan struktur respons dengan fixture Frontend.
-- [ ] Sediakan `GET /api/evaluations` untuk hasil eksperimen dari Data.
+- [x] Sediakan `GET /api/evaluations` untuk hasil eksperimen dari Data.
 - [x] Atur CORS untuk origin lokal Frontend. Dokumentasikan alamat API, konfigurasi file dan artefak, serta contoh respons untuk kondisi siap, sedang diproses, dan gagal.
 - [x] Uji file valid, file hilang, kolom salah, ID duplikat, artefak gagal dimuat, dan hasil dari ketiga pipeline dengan contoh sintetis.
 - [x] Uji pembacaan berulang pada versi yang sama dan pemrosesan ulang ketika versi dataset atau model berubah.
-- [ ] Cocokkan hasil per pelanggan dengan contoh serah terima dari tim Data. Ukur waktu batch dan waktu baca hasil tersimpan pada paket final.
+- [x] Cocokkan hasil per pelanggan dengan contoh serah terima dari tim Data. Ukur waktu batch dan waktu baca hasil tersimpan pada paket yang diserahkan.
 
 ### Hasil serah terima Backend
 
-- [ ] API berjalan dengan file churn dan artefak terpilih, beserta dokumentasi endpoint dan contoh respons.
-- [ ] Panduan pemasangan dataset dan model, cara menjalankan server, serta cara memeriksa status pemrosesan dan versi hasil.
-- [ ] Hasil uji integrasi yang menunjukkan kecocokan ID, keberhasilan membaca ulang hasil, dan pergantian versi. Selesaikan serah terima setelah Frontend berhasil membaca hasil untuk satu versi dataset melalui API.
+- [x] API berjalan dengan file churn dan artefak terpilih, beserta dokumentasi endpoint dan contoh respons.
+- [x] Panduan pemasangan dataset dan model, cara menjalankan server, serta cara memeriksa status pemrosesan dan versi hasil.
+- [x] Hasil uji integrasi Backend menunjukkan kecocokan ID, keberhasilan membaca ulang hasil, dan pergantian versi.
+- [ ] Selesaikan uji dashboard bersama Frontend setelah UI berhasil membaca hasil untuk satu versi dataset melalui API.
 
 ## 3. Frontend
 
