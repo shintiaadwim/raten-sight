@@ -94,3 +94,24 @@ def batch_settings(tmp_path, sample_csv, manifest_path):
     dataset = tmp_path / "churn.csv"
     dataset.write_bytes(sample_csv)
     return BatchSettings(dataset, manifest_path, tmp_path / "results", poll_seconds=0.02)
+
+
+@pytest.fixture
+def evaluation_payload():
+    test_version = {"dataset_version": "telco-test-v1", "model_version": "test-v1"}
+    return {
+        **test_version,
+        "currency_unit": "USD",
+        "classification": {
+            "cv_candidates": [{"Kandidat": "Decision Tree", "F1_Mean": 0.8}],
+            "test_evaluation": {**test_version, "evaluation_source": "Hold-out 20%", "f1": 0.75},
+        },
+        "clustering": {
+            "candidates": [{"Kandidat": "K-Means", "Silhouette": 0.5}],
+            "segment_profiles": [{"segment_id": 0, "customer_count": 2}],
+        },
+        "regression": {
+            "cv_candidates": [{"Kandidat": "Ridge", "MAE_Mean (USD)": 0.8}],
+            "test_evaluation": {**test_version, "evaluation_source": "Hold-out 20%", "mae_usd": 0.9},
+        },
+    }
